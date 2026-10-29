@@ -199,6 +199,57 @@ centered = false
 [node name="Seat" type="Marker2D" parent="SavePoint_RoadStart"]
 position = Vector2(0, 22)
 
+[node name="SavePoint_BeforeDunes" type="Area2D" parent="."]
+position = Vector2(1950, 344)
+script = ExtResource("5_save")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint_BeforeDunes"]
+shape = SubResource("CircleShape2D_save")
+
+[node name="Spot" type="Sprite2D" parent="SavePoint_BeforeDunes"]
+texture_filter = 1
+position = Vector2(-66, -42)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("meditation_art")
+centered = false
+
+[node name="Seat" type="Marker2D" parent="SavePoint_BeforeDunes"]
+position = Vector2(0, 22)
+
+[node name="SavePoint_BeforeCaravan" type="Area2D" parent="."]
+position = Vector2(3440, 344)
+script = ExtResource("5_save")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint_BeforeCaravan"]
+shape = SubResource("CircleShape2D_save")
+
+[node name="Spot" type="Sprite2D" parent="SavePoint_BeforeCaravan"]
+texture_filter = 1
+position = Vector2(-66, -42)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("meditation_art")
+centered = false
+
+[node name="Seat" type="Marker2D" parent="SavePoint_BeforeCaravan"]
+position = Vector2(0, 22)
+
+[node name="SavePoint_BeforeBrute" type="Area2D" parent="."]
+position = Vector2(4200, 344)
+script = ExtResource("5_save")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint_BeforeBrute"]
+shape = SubResource("CircleShape2D_save")
+
+[node name="Spot" type="Sprite2D" parent="SavePoint_BeforeBrute"]
+texture_filter = 1
+position = Vector2(-66, -42)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("meditation_art")
+centered = false
+
+[node name="Seat" type="Marker2D" parent="SavePoint_BeforeBrute"]
+position = Vector2(0, 22)
+
 [node name="SavePoint_BeforeCity" type="Area2D" parent="." unique_id=637993992]
 position = Vector2(4900, 344)
 script = ExtResource("5_save")
@@ -239,7 +290,7 @@ position = Vector2(3880, 384)
 position = Vector2(300, 364)
 
 [node name="Butterfly2" parent="Critters" instance=ExtResource("rd_butterfly")]
-position = Vector2(4560, 364)
+position = Vector2(4700, 364)
 
 [node name="Grass" type="Node2D" parent="."]
 
@@ -451,7 +502,7 @@ frame = 1
 speed_scale = 1.16
 
 [node name="Tuft40" parent="Grass" instance=ExtResource("rd_grass")]
-position = Vector2(5066, 384)
+position = Vector2(5130, 384)
 frame = 1
 speed_scale = 0.84
 
@@ -484,35 +535,15 @@ state_key = "enemies_loneshield"
 respawns = true
 
 [node name="Fight_LoneShieldTrigger" type="Area2D" parent="Fight_LoneShield"]
-position = Vector2(1650, 240)
+position = Vector2(1600, 240)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_LoneShield/Fight_LoneShieldTrigger"]
 shape = SubResource("RectangleShape2D_fight")
 
 [node name="EnemySpawnPoint1" type="Node2D" parent="Fight_LoneShield"]
-position = Vector2(1760, 368)
+position = Vector2(1700, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "shield"
-size = "medium"
-
-[node name="Fight_LoneVulture" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
-script = ExtResource("7_spawner")
-enemy_level = 2
-auto_spawn_on_ready = false
-trigger_area = NodePath("Fight_LoneVultureTrigger")
-state_key = "enemies_lonevulture"
-respawns = true
-
-[node name="Fight_LoneVultureTrigger" type="Area2D" parent="Fight_LoneVulture"]
-position = Vector2(1810, 240)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_LoneVulture/Fight_LoneVultureTrigger"]
-shape = SubResource("RectangleShape2D_fight")
-
-[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_LoneVulture"]
-position = Vector2(1900, 210)
-script = ExtResource("8_spawn_point")
-enemy_type = "vulture"
 size = "medium"
 
 [node name="Fight_LoneElite" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
@@ -527,7 +558,7 @@ reward = Dictionary[String, int]({
 })
 
 [node name="Fight_LoneEliteTrigger" type="Area2D" parent="Fight_LoneElite"]
-position = Vector2(4300, 240)
+position = Vector2(4380, 240)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_LoneElite/Fight_LoneEliteTrigger"]
 shape = SubResource("RectangleShape2D_fight")
@@ -553,19 +584,19 @@ respawns = true
 win_xp = 10
 
 [node name="Fight_DunesTrigger" type="Area2D" parent="Fight_Dunes" unique_id=722591254]
-position = Vector2(2170, 240)
+position = Vector2(2150, 240)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Dunes/Fight_DunesTrigger" unique_id=1881644014]
 shape = SubResource("RectangleShape2D_fight")
 
 [node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Dunes" unique_id=279423724]
-position = Vector2(2250, 368)
+position = Vector2(2230, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "melee"
 spawn_id = "Fight_Dunes_EnemySpawnPoint1"
 
 [node name="BigSlot_JackalPackLeader_4" type="Node2D" parent="Fight_Dunes" unique_id=758727549]
-position = Vector2(2490, 368)
+position = Vector2(2470, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "fast"
 big_kind = "jackal_pack_leader"
@@ -584,24 +615,24 @@ respawns = true
 win_xp = 22
 
 [node name="Fight_MesaTrigger" type="Area2D" parent="Fight_Mesa" unique_id=914293600]
-position = Vector2(2700, 240)
+position = Vector2(2900, 240)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Mesa/Fight_MesaTrigger" unique_id=1238355335]
 shape = SubResource("RectangleShape2D_fight")
 
 [node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Mesa" unique_id=1658975055]
-position = Vector2(2990, 368)
+position = Vector2(3080, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "shield"
 
 [node name="EnemySpawnPoint4" type="Node2D" parent="Fight_Mesa" unique_id=512310753]
-position = Vector2(3070, 368)
+position = Vector2(3160, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "archer"
 spawn_id = "Fight_Mesa_EnemySpawnPoint4"
 
 [node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Mesa" unique_id=379823433]
-position = Vector2(2910, 368)
+position = Vector2(3000, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "fast"
 
@@ -621,25 +652,25 @@ reward = Dictionary[String, int]({
 })
 
 [node name="Fight_CaravanTrigger" type="Area2D" parent="Fight_Caravan" unique_id=1054714481]
-position = Vector2(3500, 240)
+position = Vector2(3600, 240)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Caravan/Fight_CaravanTrigger" unique_id=130227908]
 shape = SubResource("RectangleShape2D_fight")
 
 [node name="BigSlot_ArmouredScorpion_1" type="Node2D" parent="Fight_Caravan" unique_id=574678015]
-position = Vector2(3640, 368)
+position = Vector2(3700, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "tank"
 big_kind = "armoured_scorpion"
 spawn_id = "Fight_Caravan_EnemySpawnPoint1"
 
 [node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Caravan" unique_id=1077175829]
-position = Vector2(3800, 368)
+position = Vector2(3860, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "melee"
 
 [node name="EnemySpawnPoint4" type="Node2D" parent="Fight_Caravan" unique_id=153186663]
-position = Vector2(3880, 368)
+position = Vector2(3940, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "shield"
 
@@ -651,7 +682,7 @@ state_key = "enemies_oldvulture"
 respawns = true
 
 [node name="BigSlot_OldVulture_1" type="Node2D" parent="Fight_OldVulture"]
-position = Vector2(4740, 200)
+position = Vector2(5080, 200)
 script = ExtResource("8_spawn_point")
 enemy_type = "vulture"
 size = "medium"
@@ -659,7 +690,7 @@ big_kind = "old_vulture"
 spawn_id = "Fight_OldVulture_EnemySpawnPoint1"
 
 [node name="Chest_OldVulture" parent="." instance=ExtResource("chest")]
-position = Vector2(4680, 384)
+position = Vector2(5020, 384)
 contents = Dictionary[String, int]({
 "potion_lesser": 2,
 "mana_crystal": 2
@@ -762,13 +793,13 @@ centered = false
 offset = Vector2(-78, -114)
 
 [node name="OccluderPalm2" parent="FrontDark" instance=ExtResource("decor_palm")]
-position = Vector2(3680, 520)
+position = Vector2(4800, 520)
 scale = Vector2(7.15, 7.15)
 flip_h = true
 
 [node name="OccluderRock2" type="Sprite2D" parent="FrontDark"]
 texture_filter = 1
-position = Vector2(4628, 520)
+position = Vector2(4750, 520)
 scale = Vector2(2.2, 2.2)
 texture = ExtResource("x5")
 centered = false

@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_melee")
 enemy_type = "melee"
-speed = 90.0
+speed = 140.0
 runs = false
 stride_speed = 70.0
 base_damage = 24.0

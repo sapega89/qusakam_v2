@@ -398,15 +398,12 @@ func _placements() -> void:
 			"one Cthulhu fly, in the Laboratory, alone, medium; an elite by kind (D652) (%s)" % [flies])
 	ck(vultures.size() >= 2 and vultures.all(func(v: Array) -> bool: return v[0] in OUTDOORS), "vultures only outdoors (%d)" % vultures.size())
 	var map: Node = game.map
-	var lone: Node = map.get_node(^"Fight_LoneVulture")
+	# D940: одинокий гриф біля торговця прибраний — перший гриф дороги — старий, сам, біля своєї скрині (D722)
+	var lone: Node = map.get_node(^"Fight_OldVulture")
 	var first: Node = lone.spawn_points[0]
-	ck(lone.spawn_points.size() == 1 and first.enemy_type == "vulture" and lone.variant_size(first) == "medium" and first.kind() == "vulture",
-			"DesertRoad: the first vulture comes alone, medium, an ordinary vulture")
+	ck(lone.spawn_points.size() == 1 and first.enemy_type == "vulture" and first.kind() == "old_vulture",
+			"DesertRoad: the first vulture is the old one, alone")
 	var road: Array = vultures.filter(func(v: Array) -> bool: return v[0] == "DesertRoad")
-	ck(road.all(func(v: Array) -> bool: return v[2].x >= first.position.x or v[1] == "Fight_LoneVulture"), "no vulture on the road before the lone one")
+	ck(road.size() == 1, "one vulture on the road (%s)" % [road])
 	var caravan: Array = map.get_node(^"Fight_Caravan").spawn_points.map(func(p: Node) -> String: return p.enemy_type)
 	ck(not caravan.has("vulture"), "D817: no vulture in the Caravan's group any more (a bandit, a shield-bearer, the scorpion) (%s)" % [caravan])
-	var lone_x: float = first.global_position.x
-	for name in ["Fight_LoneShield", "Fight_Dunes"]:
-		var zone: Area2D = map.get_node(NodePath(name)).trigger_area
-		ck(absf(zone.global_position.x - lone_x) >= 120.0, "%s's zone is %.0f px from the lone vulture" % [name, absf(zone.global_position.x - lone_x)])

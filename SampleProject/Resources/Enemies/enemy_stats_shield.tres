@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_shield")
 enemy_type = "shield"
-speed = 75.0
+speed = 115.0
 runs = false
 stride_speed = 55.0
 base_damage = 26.0

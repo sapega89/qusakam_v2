@@ -78,6 +78,10 @@ func _initialize() -> void:
 	for node in game.map.find_children("*", "CharacterBody2D", true, false):
 		if node.is_in_group(&"enemies"):
 			node.queue_free()
+	# Арена — не бій дороги: зони боїв (D940/D935 розставляють їх біля арени) не спавнять сюди своїх
+	for spawner: Node in game.map.get_children():
+		if spawner.get(&"trigger_area") != null:  # RoomEnemySpawner — тип не названо: скрипт тесту компілюється до автозавантажень
+			spawner.trigger_area.monitoring = false
 	_heal()
 	hero.global_position.x += 700.0
 	await create_timer(0.8).timeout
