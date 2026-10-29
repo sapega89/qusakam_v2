@@ -124,6 +124,7 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	await _drain(sl.get_dialogue_manager())
+	game.set_quest_flag("desert_road_merchant_thanked", true)  # D940: тест не про торговця — його подяка й вікно «Отримано» позаду
 	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 16: await process_frame
 	await _drain(sl.get_dialogue_manager())

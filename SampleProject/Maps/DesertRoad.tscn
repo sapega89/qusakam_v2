@@ -524,6 +524,7 @@ enemy_type = "fast"
 position = Vector2(1120, 396)
 task_giver = "merchant"
 gone_with_flag = "city_gates_fight_complete"
+opens_with_flag = "desert_road_fight_complete"
 chatter_dialogue = "res://dialogue_quest/DesertRoad_Merchant_Chatter.dqd"
 
 [node name="Fight_LoneShield" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]

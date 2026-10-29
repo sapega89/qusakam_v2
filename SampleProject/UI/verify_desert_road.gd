@@ -29,7 +29,7 @@ func _enemies(road: Node) -> Array[Node]:
 
 func _reset_flags(game: Node, extra: Dictionary) -> void:
 	var flags: Dictionary = game.get_quest_flags().duplicate()
-	for f in ["canyon_exit_complete", "desert_road_fight_complete"]:
+	for f in ["canyon_exit_complete", "desert_road_fight_complete", "desert_road_merchant_thanked"]:
 		flags.erase(f)
 	flags.merge(extra, true)
 	game.set_quest_flags(flags)
@@ -81,6 +81,11 @@ func _initialize() -> void:
 		ck(enemy.global_position.x - hero_x > enemy.detection_range,
 				"%s waits out of reach of the arriving hero (%.0f px > %.0f)" % [enemy.name, enemy.global_position.x - hero_x, enemy.detection_range])
 	ck(not game.get_quest_flag("desert_road_fight_complete"), "fight not counted yet")
+	var merchant: Node = road.get_node("Merchant")
+	var buys := func() -> bool: return merchant.menu_entries().any(func(e: Dictionary) -> bool: return e.id == &"buy")
+	ck(not buys.call(), "D940: the merchant does not trade while the bandits are at his stall")
+	var inventory: Node = sl.get_inventory_manager()
+	var potions_before: int = inventory.get_item_count("potion")
 
 	print("[2] Killing every enemy ends the fight")
 	for enemy in _enemies(road):
@@ -88,6 +93,15 @@ func _initialize() -> void:
 	for i in 4: await process_frame
 	ck(game.get_quest_flag("desert_road_fight_complete"), "desert_road_fight_complete set")
 	ck(road.current_state == road.State.TRANSITION_TO_CITY, "state TRANSITION_TO_CITY")
+	for i in 10: await process_frame
+	ck(started == ["res://dialogue_quest/DesertRoad_Merchant_Thanks.dqd"] or started == ["DesertRoad_Merchant_Thanks"],
+			"D940: the merchant thanks the hero after the fight (%s)" % [started])
+	await _finish_dialogue(sl.get_dialogue_manager())
+	for i in 10: await process_frame
+	ck(game.get_quest_flag("desert_road_merchant_thanked") and inventory.get_item_count("potion") == potions_before + 2,
+			"D940: and gives 2 potions (%d → %d)" % [potions_before, inventory.get_item_count("potion")])
+	ck(buys.call(), "D940: now he trades (Buy in his menu)")
+	started.clear()
 	road.queue_free()
 	for i in 4: await process_frame
 
@@ -96,7 +110,7 @@ func _initialize() -> void:
 	for i in 6: await process_frame
 	ck(road.current_state == road.State.TRANSITION_TO_CITY, "state TRANSITION_TO_CITY")
 	ck(_enemies(road).size() == 0, "the road stays clear (%d)" % _enemies(road).size())
-	ck(started.is_empty(), "still no talk (%s)" % [started])
+	ck(started.is_empty(), "still no talk, the thanks are not repeated (%s)" % [started])
 	road.queue_free()
 
 	for i in 4: await process_frame

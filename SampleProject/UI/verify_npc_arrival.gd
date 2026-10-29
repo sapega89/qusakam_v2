@@ -194,7 +194,7 @@ func _initialize() -> void:
 		ck(text.find("NpcArrival") == -1 and text.find("_Arrival.dqd") == -1, "%s has no arrival zone or arrival talk" % map)
 
 	print("[3] Desert Road: after the fight the merchant stands at his shop with a blue \"!\"")
-	for f: String in ["canyon_exit_complete", "desert_road_fight_complete"]:
+	for f: String in ["canyon_exit_complete", "desert_road_fight_complete", "desert_road_merchant_thanked"]:  # D940: подяка позаду
 		game.set_quest_flag(f, true)
 	await _meet(game, sl, "res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start", "Merchant", "merchant_caravan",
 			"Merchant_Caravan_Give", "Merchant_Bark", 700.0)

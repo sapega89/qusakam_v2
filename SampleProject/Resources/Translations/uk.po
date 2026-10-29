@@ -3805,3 +3805,22 @@ msgstr "Великі сходи"
 
 msgid "Lab Guard Pocket"
 msgstr "Кишеня вартового"
+
+# D943 — меню розробника (F10)
+msgid "Developer menu (F10)"
+msgstr "Меню розробника (F10)"
+
+msgid "+100 gold"
+msgstr "+100 золота"
+
+msgid "+1000 gold"
+msgstr "+1000 золота"
+
+msgid "God mode: OFF"
+msgstr "Безсмертя: вимк."
+
+msgid "God mode: ON"
+msgstr "Безсмертя: увімк."
+
+msgid "Full HP"
+msgstr "Повне здоровʼя"

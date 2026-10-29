@@ -50,3 +50,21 @@ func _on_all_enemies_defeated() -> void:
 	"""Обработчик когда все враги убиты"""
 	DebugLogger.info("🌵 DesertRoad: All enemies defeated, advancing state", "Scene")
 	_fight_won(State.FIGHT_ENCOUNTER, "desert_road_fight_complete")
+	_merchant_thanks(state_run_id)
+
+## D940: бандитів біля торговця прогнано — він одразу дякує й дарує зілля, раз на гру. Крамниця відкривається тим самим
+## прапорцем бою (Merchant.opens_with_flag).
+const THANKS_FLAG := "desert_road_merchant_thanked"
+const THANKS_GIFT: Dictionary[String, int] = {"potion": 2}
+
+func _merchant_thanks(run_id: int) -> void:
+	var game := Game.get_singleton()
+	if game.get_quest_flag(THANKS_FLAG):
+		return
+	if not await _play_dialogue("DesertRoad_Merchant_Thanks", run_id):
+		return
+	game.set_quest_flag(THANKS_FLAG, true)
+	var inventory: InventoryManager = ServiceLocator.get_inventory_manager()
+	for item_id: String in THANKS_GIFT:
+		inventory.add_item(item_id, THANKS_GIFT[item_id])
+	ServiceLocator.get_ui_manager().show_obtained(THANKS_GIFT)

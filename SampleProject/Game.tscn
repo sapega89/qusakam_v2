@@ -21,6 +21,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/UI/Components/hud_xp_bar.tscn" id="17_hudxp"]
 [ext_resource type="PackedScene" uid="uid://ieswd7jymiqi" path="res://SampleProject/Scenes/DialogueSystem.tscn" id="11_dialogue"]
 [ext_resource type="PackedScene" path="res://SampleProject/UI/Components/hud_new_points.tscn" id="30_hud_new_points"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/dev_menu.tscn" id="31_dev_menu"]
 
 [sub_resource type="GDScript" id="GDScript_u7odr"]
 resource_name = "MapWindow"
@@ -270,3 +271,5 @@ layout_mode = 1
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_world")
+
+[node name="DevMenu" parent="UICanvas" instance=ExtResource("31_dev_menu")]

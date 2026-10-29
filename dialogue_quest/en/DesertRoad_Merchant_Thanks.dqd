@@ -1,0 +1,4 @@
+// [DRAFT] D940 — the merchant thanks the hero for driving the bandits off his stall; lines await Sapega
+say|MERCHANT|You drove them off! I thought I'd lose the rest of my goods too.
+say|MERCHANT|Take this, from me. And if you need anything for the road — come by, we'll trade.
+exit|

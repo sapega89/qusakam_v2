@@ -3784,3 +3784,22 @@ msgstr "Great Stairs"
 
 msgid "Lab Guard Pocket"
 msgstr "Guard's Alcove"
+
+# D943 — меню розробника (F10)
+msgid "Developer menu (F10)"
+msgstr "Developer menu (F10)"
+
+msgid "+100 gold"
+msgstr "+100 gold"
+
+msgid "+1000 gold"
+msgstr "+1000 gold"
+
+msgid "God mode: OFF"
+msgstr "God mode: OFF"
+
+msgid "God mode: ON"
+msgstr "God mode: ON"
+
+msgid "Full HP"
+msgstr "Full HP"

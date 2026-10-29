@@ -12,6 +12,8 @@ var shop_canvas_layer: CanvasLayer = null
 
 # ID торговця для завантаження товарів з JSON
 @export var merchant_id: String = "default"
+## D940: крамниця відкривається з цим прапорцем (торговець на дорозі — після бою біля нього). Порожньо — одразу.
+@export var opens_with_flag: String = ""
 
 func _ready():
 	super._ready()
@@ -21,7 +23,8 @@ func _ready():
 
 func menu_entries() -> Array:
 	var entries := super.menu_entries()
-	entries.append({"id": &"buy", "label": "Buy"})
+	if opens_with_flag == "" or load(GAME_PATH).get_singleton().get_quest_flag(opens_with_flag):
+		entries.append({"id": &"buy", "label": "Buy"})
 	return entries
 
 func _can_open_menu() -> bool:

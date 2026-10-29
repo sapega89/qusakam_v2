@@ -540,6 +540,9 @@ func refresh_max_health() -> void:
 		health_bar.update_health_color(current_health)
 
 
+## Режим розробника (D943): безсмертя з F10-меню — окремо від is_invulnerable, яку вмикає й вимикає перекат.
+var dev_god := false
+
 ## Ушкодження героєві: спершу захист у відсотках (D206), далі Shield Block зі щитом (D207). Щонайменше 1.
 ## Souls-lite (D264): удар ворога, що справді поранив, збиває героя — на stagger_time ворога, фінішер серії довше.
 ## Блок спереду (4b) шкоди не завдає й не збиває; удар, що збив би на GUARD_BREAK і довше (tank, фінішер серії),
@@ -549,7 +552,7 @@ func refresh_max_health() -> void:
 func take_damage(damage: int, source: Node = null, critical: bool = false) -> void:
 	if is_invulnerable and mover.is_rolling() and (source is DefaultEnemy or source is Arrow):
 		EventBus.player_dodged_through.emit(source)
-	if is_invulnerable or is_dead:
+	if is_invulnerable or is_dead or dev_god:
 		return
 	var guard := combat.guard_against(source)
 	if guard == &"parry":
