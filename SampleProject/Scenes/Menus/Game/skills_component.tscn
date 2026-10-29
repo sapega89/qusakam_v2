@@ -101,11 +101,18 @@ theme_type_variation = &"SkillTreeStatus"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="Stage" type="Control" parent="Window/Center/Body/Columns/LeftPanel/Tree"]
+[node name="Scroll" type="ScrollContainer" parent="Window/Center/Body/Columns/LeftPanel/Tree"]
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
+follow_focus = true
 
-[node name="Links" type="Control" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage"]
+[node name="Stage" type="Control" parent="Window/Center/Body/Columns/LeftPanel/Tree/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Links" type="Control" parent="Window/Center/Body/Columns/LeftPanel/Tree/Scroll/Stage"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -115,7 +122,20 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("2_links")
 
-[node name="Grid" type="GridContainer" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage"]
+[node name="Axis" type="Control" parent="Window/Center/Body/Columns/LeftPanel/Tree/Scroll/Stage"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="AxisLabel" type="Label" parent="Window/Center/Body/Columns/LeftPanel/Tree/Scroll/Stage/Axis"]
+layout_mode = 0
+theme_type_variation = &"SkillLevelBadgeLabel"
+
+[node name="Grid" type="GridContainer" parent="Window/Center/Body/Columns/LeftPanel/Tree/Scroll/Stage"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -126,20 +146,20 @@ theme_override_constants/h_separation = 52
 theme_override_constants/v_separation = 24
 columns = 4
 
-[node name="Cell" type="VBoxContainer" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid"]
+[node name="Cell" type="VBoxContainer" parent="Window/Center/Body/Columns/LeftPanel/Tree/Scroll/Stage/Grid"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="Slot" type="Button" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell"]
+[node name="Slot" type="Button" parent="Window/Center/Body/Columns/LeftPanel/Tree/Scroll/Stage/Grid/Cell"]
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
 focus_mode = 2
 theme_type_variation = &"SkillSlot"
 toggle_mode = true
 
-[node name="Art" type="TextureRect" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell/Slot"]
+[node name="Art" type="TextureRect" parent="Window/Center/Body/Columns/LeftPanel/Tree/Scroll/Stage/Grid/Cell/Slot"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -154,18 +174,18 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="LevelBadge" type="PanelContainer" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell/Slot"]
+[node name="LevelBadge" type="PanelContainer" parent="Window/Center/Body/Columns/LeftPanel/Tree/Scroll/Stage/Grid/Cell/Slot"]
 layout_mode = 1
 offset_left = -4.0
 offset_top = -9.0
 mouse_filter = 2
 theme_type_variation = &"SkillLevelBadge"
 
-[node name="Label" type="Label" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell/Slot/LevelBadge"]
+[node name="Label" type="Label" parent="Window/Center/Body/Columns/LeftPanel/Tree/Scroll/Stage/Grid/Cell/Slot/LevelBadge"]
 layout_mode = 2
 theme_type_variation = &"SkillLevelBadgeLabel"
 
-[node name="Plus" type="PanelContainer" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell/Slot"]
+[node name="Plus" type="PanelContainer" parent="Window/Center/Body/Columns/LeftPanel/Tree/Scroll/Stage/Grid/Cell/Slot"]
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 1
 anchors_preset = 1
@@ -179,14 +199,14 @@ grow_horizontal = 0
 mouse_filter = 2
 theme_type_variation = &"SkillPlusBadge"
 
-[node name="Label" type="Label" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell/Slot/Plus"]
+[node name="Label" type="Label" parent="Window/Center/Body/Columns/LeftPanel/Tree/Scroll/Stage/Grid/Cell/Slot/Plus"]
 layout_mode = 2
 theme_type_variation = &"SkillPlusLabel"
 text = "+"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Rank" type="Label" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell"]
+[node name="Rank" type="Label" parent="Window/Center/Body/Columns/LeftPanel/Tree/Scroll/Stage/Grid/Cell"]
 layout_mode = 2
 theme_type_variation = &"SkillRank"
 horizontal_alignment = 1
@@ -214,11 +234,18 @@ theme_type_variation = &"SkillTreeStatus"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="Stage" type="Control" parent="Window/Center/Body/Columns/RightPanel/Tree"]
+[node name="Scroll" type="ScrollContainer" parent="Window/Center/Body/Columns/RightPanel/Tree"]
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
+follow_focus = true
 
-[node name="Links" type="Control" parent="Window/Center/Body/Columns/RightPanel/Tree/Stage"]
+[node name="Stage" type="Control" parent="Window/Center/Body/Columns/RightPanel/Tree/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Links" type="Control" parent="Window/Center/Body/Columns/RightPanel/Tree/Scroll/Stage"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -228,7 +255,20 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("2_links")
 
-[node name="Grid" type="GridContainer" parent="Window/Center/Body/Columns/RightPanel/Tree/Stage"]
+[node name="Axis" type="Control" parent="Window/Center/Body/Columns/RightPanel/Tree/Scroll/Stage"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="AxisLabel" type="Label" parent="Window/Center/Body/Columns/RightPanel/Tree/Scroll/Stage/Axis"]
+layout_mode = 0
+theme_type_variation = &"SkillLevelBadgeLabel"
+
+[node name="Grid" type="GridContainer" parent="Window/Center/Body/Columns/RightPanel/Tree/Scroll/Stage"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5

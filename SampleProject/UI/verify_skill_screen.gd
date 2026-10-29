@@ -26,6 +26,12 @@ func _drain(dm: Node) -> void:
 			return
 
 func _mouse(node: Control, button: MouseButton = MOUSE_BUTTON_LEFT, double: bool = false) -> void:
+	var scroll: Node = node.get_parent()
+	while scroll != null and not scroll is ScrollContainer:
+		scroll = scroll.get_parent()
+	if scroll != null:  # D945: дерево прокручується — клітинку спершу в кадр, як зробив би гравець коліщатком
+		scroll.ensure_control_visible(node)
+		for i in 3: await process_frame
 	var vp: Viewport = node.get_viewport()
 	var pos: Vector2 = node.get_global_rect().get_center()
 	var motion := InputEventMouseMotion.new()
@@ -110,18 +116,23 @@ func _initialize() -> void:
 	var ui: Node = menu.find_child("SkillsComponent", true, false)
 	var S = ui.NodeState
 
-	print("[1] Fits without scrolling; cells by slot; sizes from UITokens")
-	ck(ui.find_children("*", "ScrollContainer", true, false).is_empty(), "no ScrollContainer on the screen")
+	print("[1] The trees scroll (D945: a row per unlock level); cells by slot; sizes from UITokens")
+	ck(ui.find_children("*", "ScrollContainer", true, false).size() == 2, "each tree panel scrolls (D945)")
 	var window: Control = ui.get_node(^"Window")
 	ck(window.get_combined_minimum_size().y <= window.size.y, "the window's content fits its height (%d of %d)" % [window.get_combined_minimum_size().y, window.size.y])
 	ck(window.offset_bottom == -UITokens.BOTTOM_BAR_HEIGHT, "the window ends above the hint bar (%d)" % window.offset_bottom)
 	for panel: Control in [ui._left_panel, ui._right_panel]:
-		var stage: Control = panel.get_node(^"Tree/Stage")
+		var stage: Control = panel.get_node(^"Tree/Scroll/Stage")
 		var grid: GridContainer = ui._grid(panel)
-		ck(grid.get_combined_minimum_size().y + grid.offset_top <= stage.size.y, "%s: the grid fits (%d of %d)" % [panel.name, grid.get_combined_minimum_size().y, stage.size.y])
+		ck(grid.get_combined_minimum_size().y + grid.offset_top <= stage.custom_minimum_size.y + 1.0,
+				"%s: the stage is as tall as the grid, so it scrolls to the last row (%d of %d)" % [panel.name, grid.get_combined_minimum_size().y, stage.custom_minimum_size.y])
 		ck(grid.columns == UITokens.SKILL_GRID_COLUMNS and grid.get_theme_constant(&"h_separation") == UITokens.SKILL_GRID_GAP_H
 				and grid.get_theme_constant(&"v_separation") == UITokens.SKILL_GRID_GAP_V, "%s: columns and gaps from UITokens" % panel.name)
-		ck(grid.get_child_count() == UITokens.SKILL_GRID_COLUMNS * UITokens.SKILL_GRID_ROWS, "%s: a 4 × 5 grid" % panel.name)
+		var levels: Array = panel.get_meta(&"levels", [])
+		ck(grid.get_child_count() == UITokens.SKILL_GRID_COLUMNS * maxi(levels.size(), 1), "%s: 4 columns × a row per level (%d)" % [panel.name, levels.size()])
+		var axis: Array = panel.get_node(^"Tree/Scroll/Stage/Axis").get_children().filter(func(l: Label) -> bool: return l.visible)
+		ck(axis.size() == levels.size() and (axis.is_empty() or axis[0].text == tr("Lv %d") % levels[0]),
+				"%s: a level label beside each row (%s)" % [panel.name, axis.map(func(l: Label) -> String: return l.text)])
 	ck(ui._cell.custom_minimum_size.x == UITokens.SKILL_SLOT_SIZE and ui._cell.get_node(^"Slot").custom_minimum_size == Vector2(UITokens.SKILL_SLOT_SIZE, UITokens.SKILL_SLOT_SIZE),
 			"the cell is SKILL_SLOT_SIZE")
 	ck(ui.get_node(^"Window/Center/Body/Columns/SidePanel").custom_minimum_size.x == UITokens.SKILL_DETAIL_WIDTH
@@ -134,7 +145,7 @@ func _initialize() -> void:
 	var training: Rect2 = ui._rows["weapon_training"].get_global_rect()
 	ck(is_equal_approx(keen.position.x, training.position.x) and keen.position.y > training.end.y, "Keen Edge right under Weapon Training")
 	var styled: Array = ui.find_children("*", "Control", true, false).filter(
-			func(c: Control) -> bool: return c.has_theme_stylebox_override(&"panel") or c.has_theme_color_override(&"font_color"))
+			func(c: Control) -> bool: return c.owner != null and (c.has_theme_stylebox_override(&"panel") or c.has_theme_color_override(&"font_color")))
 	ck(styled.is_empty(), "cells and panels carry no stylebox / colour overrides (D117): %s" % [styled.map(func(c): return String(c.name))])
 	var links: Array = ui._links(ui._left_panel).links + ui._links(ui._right_panel).links
 	ck(links.size() == 11, "11 lines in the Paladin view (4 in the trunk, 7 in Paladin): %d" % links.size())
@@ -201,12 +212,22 @@ func _initialize() -> void:
 	ck(ui.plan.skill_picks("devotion") == 1, "pad A: Learn +1")
 	await _pad(JOY_BUTTON_X)
 	ck(ui.plan.is_empty(), "pad X takes it back")
+	# D945: ряди — рівні; праворуч — наступна навичка того ж ряду, з дерева в дерево (ряд з тим самим номером)
+	var row_of := func(id: String) -> Array:
+		var y: int = ui._skill_database.get_skill(id).slot.y
+		var ids: Array = ui._rows.keys().filter(func(k: String) -> bool: return ui._skill_database.get_skill(k).slot.y == y)
+		ids.sort_custom(func(a: String, b: String) -> bool: return ui._rows[a].global_position.x < ui._rows[b].global_position.x)
+		return ids
+	var row: Array = row_of.call("devotion")
+	var after: Array = row.slice(row.find("devotion") + 1)
 	await _pad(JOY_BUTTON_DPAD_RIGHT)
-	ck(_focus() == ui._rows["shield_bash"], "D-pad right: the next cell of the row (%s)" % (_focus().get_parent().name if _focus() else "none"))
+	ck(not after.is_empty() and _focus() == ui._rows[after[0]], "D-pad right: the next skill of the row (%s, expected %s)" % [_focus().get_parent().name if _focus() else "none", after.slice(0, 1)])
 	await _pad(JOY_BUTTON_DPAD_RIGHT)
-	ck(_focus() == ui._rows["shield_of_faith"], "and on into the oath tree (%s)" % (_focus().get_parent().name if _focus() else "none"))
+	ck(after.size() > 1 and _focus() == ui._rows[after[1]], "and on along the row, across into the oath tree (%s, expected %s)" % [_focus().get_parent().name if _focus() else "none", after.slice(1, 2)])
+	var above: Node = _focus()
 	await _pad(JOY_BUTTON_DPAD_DOWN)
-	ck(_focus() == ui._rows["aura_of_resolve"], "D-pad down: the cell below (%s)" % (_focus().get_parent().name if _focus() else "none"))
+	ck(_focus() != null and _focus() != above and _focus().get_global_rect().position.y > above.get_global_rect().position.y,
+			"D-pad down: a cell below (%s)" % (_focus().get_parent().name if _focus() else "none"))
 	for i in 8:
 		if _focus() in ui._tree_tabs.get_children():
 			break

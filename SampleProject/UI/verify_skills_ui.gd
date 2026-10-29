@@ -23,11 +23,11 @@ const FIXTURES := [
 	 "class_id": "champion", "skill_type": "active", "jp_cost": 9000, "sp_cost": 8, "slot": [2, 0]},
 	{"id": "td_prereq", "name": "Test Skill D", "description": "Needs C first.",
 	 "class_id": "champion", "skill_type": "active", "jp_cost": 20,
-	 "prerequisites": ["tc_expensive"], "slot": [2, 1]},
+	 "prerequisites": ["tc_expensive"], "required_level": 2, "slot": [2, 1]},
 	{"id": "te_level", "name": "Test Skill E", "description": "High level gate.",
 	 "class_id": "champion", "skill_type": "passive", "jp_cost": 5, "required_level": 99, "slot": [3, 0]},
 	{"id": "tf_passive", "name": "Test Skill F", "description": "Passive support.",
-	 "class_id": "champion", "skill_type": "passive", "jp_cost": 15, "slot": [0, 1]},
+	 "class_id": "champion", "skill_type": "passive", "jp_cost": 15, "required_level": 2, "slot": [0, 1]},
 	{"id": "tg_sub", "name": "Test Skill G", "description": "Secondary tree.",
 	 "oath": "paladin", "skill_type": "active", "jp_cost": 25, "sp_cost": 3, "slot": [0, 0]},
 	{"id": "th_sub_passive", "name": "Test Skill H", "description": "Secondary passive.",
@@ -90,6 +90,7 @@ func _initialize() -> void:
 	ck(ui._jp_value.text == str(sm.get_job_points()), "real JP still displayed (%s)" % ui._jp_value.text)
 
 	print("[2] populated (test fixtures)")
+	sl.get_xp_manager().add_xp(sl.get_xp_manager().xp_for_next_level - sl.get_xp_manager().current_xp)  # рівень 2: Test Skill D (рівень 2, D945) упирається в передумову, а не в рівень
 	var fixtures: Array = _for_active_class(FIXTURES, gm.get_active_character())
 	Kit.pre_d815_hero(self)  # D815: the starting skills are not in the fixtures — off the hotbar too
 	db.load_from_array(fixtures)
@@ -119,7 +120,7 @@ func _initialize() -> void:
 	ck(not leaked, "no fixture names hardcoded in the .tscn")
 	var extended: Array = fixtures.duplicate()
 	extended.append({"id": "tz_new", "name": "Test Skill Z",
-		"class_id": gm.get_active_character().class_id, "skill_type": "active", "jp_cost": 1, "slot": [1, 1]})
+		"class_id": gm.get_active_character().class_id, "skill_type": "active", "jp_cost": 1, "required_level": 3, "slot": [1, 1]})  # D945: ряд = рівень
 	db.load_from_array(extended)
 	ui.update_display()
 	for i in 2: await process_frame

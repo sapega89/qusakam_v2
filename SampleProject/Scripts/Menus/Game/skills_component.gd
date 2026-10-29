@@ -91,6 +91,8 @@ func _initialize_component() -> void:
 	for panel: PanelContainer in [_left_panel, _right_panel]:
 		var grid: GridContainer = _grid(panel)
 		grid.sort_children.connect(_links(panel).queue_redraw)
+		grid.sort_children.connect(_fit_stage.bind(panel))
+		grid.item_rect_changed.connect(_fit_stage.bind(panel))  # сітка стала посередині сцени — підписи за нею
 	update_display()
 
 
@@ -245,11 +247,11 @@ func _cells_of(tree_id: String) -> Array:
 
 
 func _grid(panel: PanelContainer) -> GridContainer:
-	return panel.get_node(^"Tree/Stage/Grid")
+	return panel.get_node(^"Tree/Scroll/Stage/Grid")
 
 
 func _links(panel: PanelContainer) -> Control:
-	return panel.get_node(^"Tree/Stage/Links")
+	return panel.get_node(^"Tree/Scroll/Stage/Links")
 
 
 func _rebuild_trees() -> void:
@@ -284,7 +286,14 @@ func _fill_panel(panel: PanelContainer, tree_id: String, definitions: Array) -> 
 		var at := definition.slot.y * UITokens.SKILL_GRID_COLUMNS + definition.slot.x
 		assert(not by_cell.has(at), "SkillsComponent: two skills in one cell (%s)" % definition.id)
 		by_cell[at] = definition
-	var cells := RowFill.fill(_grid(panel), _cell, UITokens.SKILL_GRID_COLUMNS * UITokens.SKILL_GRID_ROWS)
+	# D945: ряд = рівень (SkillDatabase._lay_out_by_level) — рядів стільки, скільки різних рівнів у дереві
+	var levels: Array = []
+	for definition: SkillDefinition in definitions:
+		if not levels.has(definition.required_level):
+			levels.append(definition.required_level)
+	levels.sort()
+	panel.set_meta(&"levels", levels)
+	var cells := RowFill.fill(_grid(panel), _cell, UITokens.SKILL_GRID_COLUMNS * levels.size())
 	_rename(cells, range(cells.size()).map(func(at: int) -> String: return by_cell[at].id if by_cell.has(at) else "Empty%d" % at))
 	for at in cells.size():
 		var cell: VBoxContainer = cells[at]
@@ -299,6 +308,28 @@ func _fill_panel(panel: PanelContainer, tree_id: String, definitions: Array) -> 
 		else:
 			slot.get_node(^"LevelBadge/Label").text = ""
 			cell.get_node(^"Rank").text = ""
+
+
+## D945: сцена дерева в прокрутці має висоту сітки; ліворуч від кожного ряду — його рівень («Рів. N»), як вісь графіка.
+func _fit_stage(panel: PanelContainer) -> void:
+	var grid := _grid(panel)
+	var stage: Control = grid.get_parent()
+	var axis: Control = stage.get_node(^"Axis")
+	var levels: Array = panel.get_meta(&"levels", [])
+	var labels := RowFill.fill(axis, axis.get_child(0), levels.size())
+	var axis_width := 0.0
+	for row in levels.size():
+		var label: Label = labels[row]
+		label.text = tr("Lv %d") % levels[row]
+		label.size = label.get_combined_minimum_size()
+		axis_width = maxf(axis_width, label.size.x + UITokens.SKILL_AXIS_GAP)
+	# Прокрутка обрізає все поза собою: сцена не вужча за сітку з підписами з обох боків (сітка посередині) і не нижча за неї.
+	stage.custom_minimum_size = Vector2(grid.get_combined_minimum_size().x + 2.0 * axis_width, grid.position.y + grid.size.y)
+	for row in levels.size():
+		var label: Label = labels[row]
+		var cell: Control = grid.get_child(row * UITokens.SKILL_GRID_COLUMNS)
+		label.position = Vector2(grid.position.x - label.size.x - UITokens.SKILL_AXIS_GAP,
+				grid.position.y + cell.position.y + (UITokens.SKILL_SLOT_SIZE - label.size.y) / 2.0)
 
 
 func _set_cell(slot: Button, definition: SkillDefinition) -> void:

@@ -54,20 +54,32 @@ func _initialize() -> void:
 	var wrong_cap: Array = db.get_all_skills().filter(func(d: SkillDefinition) -> bool:
 			return d.max_rank != (5 if d.is_active() else 3) or d.rank_jp < 1 or d.rank_bonus <= 0.0)
 	ck(wrong_cap.is_empty(), "actives rank to 5, passives to 3, every rank costs ≥ 1 JP and adds power %s" % [wrong_cap.map(func(d): return d.id)])
+	# D945: ряд = рівень відкриття (лише рівні дерева, зростають донизу), 4 колонки
 	var cells := {}
 	var clashes: Array = []
-	var not_under: Array = []
+	var wrong_row: Array = []
+	var not_below: Array = []
+	var levels := {}
 	for d: SkillDefinition in db.get_all_skills():
-		var key := "%s:%d:%d" % [d.oath, d.slot.x, d.slot.y]
-		if cells.has(key) or d.slot.x < 0 or d.slot.x >= UITokens.SKILL_GRID_COLUMNS or d.slot.y < 0 or d.slot.y >= UITokens.SKILL_GRID_ROWS:
+		var tree_levels: Array = levels.get_or_add("%s/%s" % [d.oath, d.class_id], [])
+		if not tree_levels.has(d.required_level):
+			tree_levels.append(d.required_level)
+	for tree_levels: Array in levels.values():
+		tree_levels.sort()
+	for d: SkillDefinition in db.get_all_skills():
+		var key := "%s/%s:%d:%d" % [d.oath, d.class_id, d.slot.x, d.slot.y]
+		if cells.has(key) or d.slot.x < 0 or d.slot.x >= UITokens.SKILL_GRID_COLUMNS:
 			clashes.append(d.id)
 		cells[key] = d.id
+		if levels["%s/%s" % [d.oath, d.class_id]].find(d.required_level) != d.slot.y:
+			wrong_row.append(d.id)
 		for p: String in d.prerequisites:
 			var parent: SkillDefinition = db.get_skill(p)
-			if parent.oath == d.oath and parent.slot.y != d.slot.y - 1:
-				not_under.append(d.id)
-	ck(clashes.is_empty(), "one skill per cell, inside the 4 × 5 grid %s" % [clashes])
-	ck(not_under.is_empty(), "each skill sits in the row right under its prerequisite in the same tree %s" % [not_under])
+			if parent.oath == d.oath and parent.slot.y >= d.slot.y:
+				not_below.append(d.id)
+	ck(clashes.is_empty(), "one skill per cell, inside the 4 columns %s" % [clashes])
+	ck(wrong_row.is_empty(), "D945: each skill's row is its unlock level among its tree's levels %s" % [wrong_row])
+	ck(not_below.is_empty(), "a prerequisite in the same tree sits in a row above %s" % [not_below])
 
 	print("[2] Rank-ups cost the skill's rank JP and stop at its top rank")
 	while xp.get_level() < 14:

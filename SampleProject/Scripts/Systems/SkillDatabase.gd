@@ -73,7 +73,37 @@ func load_from_array(entries: Array) -> void:
 			rejected.append("%s <duplicate id>" % definition.id)
 			continue
 		_index(definition)
+	_lay_out_by_level()
 	skills_loaded.emit()
+
+
+## D945: дерево навичок — як графік: ряд = рівень відкриття (лише рівні, що є в дереві, зростають донизу), колонка —
+## slot.x з даних; зайнята іншою навичкою того ж рівня — найближча вільна. Порожні клітинки лишаються порожніми.
+## slot.y з даних більше не читається: рівень навички й визначає її ряд.
+func _lay_out_by_level() -> void:
+	var trees := {}
+	for definition: SkillDefinition in skills.values():
+		trees.get_or_add("%s/%s" % [definition.oath, definition.class_id], []).append(definition)
+	for tree: Array in trees.values():
+		var levels: Array = []
+		for definition: SkillDefinition in tree:
+			if not levels.has(definition.required_level):
+				levels.append(definition.required_level)
+		levels.sort()
+		tree.sort_custom(func(a: SkillDefinition, b: SkillDefinition) -> bool:
+				return a.slot.y < b.slot.y or (a.slot.y == b.slot.y and a.slot.x < b.slot.x))
+		var taken := {}
+		for definition: SkillDefinition in tree:
+			var row := levels.find(definition.required_level)
+			var column := -1
+			for step in UITokens.SKILL_GRID_COLUMNS:
+				for candidate: int in [definition.slot.x + step, definition.slot.x - step]:
+					if column < 0 and candidate >= 0 and candidate < UITokens.SKILL_GRID_COLUMNS 							and not taken.has(Vector2i(candidate, row)):
+						column = candidate
+			assert(column >= 0, "SkillDatabase: more than %d skills at level %d in one tree (%s)"
+					% [UITokens.SKILL_GRID_COLUMNS, definition.required_level, definition.id])
+			definition.slot = Vector2i(column, row)
+			taken[definition.slot] = true
 
 
 func _reset() -> void:
