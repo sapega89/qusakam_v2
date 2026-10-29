@@ -60,12 +60,20 @@ func _initialize() -> void:
 	ck(hero.dev_god and hero.current_health == hero.Max_Health, "on: a hit takes no HP (%d / %d)" % [hero.current_health, hero.Max_Health])
 	ck(menu.get_node("%God").text == TranslationServer.translate("God mode: ON"), "the button says ON (%s)" % menu.get_node("%God").text)
 	menu.get_node("%God").pressed.emit()
+	await create_timer(hero.invulnerability_duration + 0.1).timeout
 	hero.take_damage(20)
 	ck(not hero.dev_god and hero.current_health < hero.Max_Health, "off: a hit hurts again (%d / %d)" % [hero.current_health, hero.Max_Health])
 
 	print("[4] Full HP")
 	menu.get_node("%FullHp").pressed.emit()
 	ck(hero.current_health == hero.Max_Health, "Full HP (%d / %d)" % [hero.current_health, hero.Max_Health])
+
+	print("[5] The console line runs any GDScript expression")
+	menu.run("ServiceLocator.get_inventory_manager().add_coins(7)")
+	ck(inventory.get_coins() == coins + 1107, "ServiceLocator.…add_coins(7) adds 7 (%d)" % inventory.get_coins())
+	ck(menu.run("player.Max_Health") == hero.Max_Health, "player.Max_Health reads the hero (%s)" % menu.get_node("%ConsoleOut").text)
+	menu.run("no_such_thing.foo()")
+	ck(menu.get_node("%ConsoleOut").text != "", "a bad line shows its error (%s)" % menu.get_node("%ConsoleOut").text)
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

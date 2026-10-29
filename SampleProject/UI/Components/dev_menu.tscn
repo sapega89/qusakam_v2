@@ -54,3 +54,13 @@ text = "God mode: OFF"
 unique_name_in_owner = true
 layout_mode = 2
 text = "Full HP"
+
+[node name="Console" type="LineEdit" parent="Center/Panel/Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(640, 0)
+layout_mode = 2
+
+[node name="ConsoleOut" type="Label" parent="Center/Panel/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3

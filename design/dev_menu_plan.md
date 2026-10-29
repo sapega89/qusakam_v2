@@ -5,7 +5,7 @@ status: planned
 
 # Режим розробника (dev menu) — plan
 
-**Slice 1 built** 2026-10-29 (D943): F10 menu, gold, god mode, full HP. Slices 2–3 open. Sapega в плейтесті: «треба додати меню режиму розробника, де я можу наклацати
+**Slice 1 built** 2026-10-29 (D943): F10 menu, gold, god mode, full HP, and a console line that runs any GDScript expression (`Expression`; autoloads by name + `player`, `game`; Sapega: «уніфікувати команди типу ServiceLocator.get_xp_manager().add_xp(500)»). Slices 2–3 open. Sapega в плейтесті: «треба додати меню режиму розробника, де я можу наклацати
 собі HP, урон, зробити безсмертним, пригати по локаціях і золото нараховувати». Figma: no design exists (службове
 меню, не частина гри для гравця; вигляд — спільна тема `GameUITheme`, без власних кольорів).
 
