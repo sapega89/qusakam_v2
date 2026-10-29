@@ -299,7 +299,9 @@ func process_physics(delta: float) -> Vector2:
 
 	state_timer += delta
 	chase_cooldown_timer += delta
-	attack_ready_in = maxf(attack_ready_in - delta, 0.0)
+	# B253: перерва між серіями тікає лише після серії й відновлення — інакше спливала посеред самої серії
+	if not is_attacking and not recovering:
+		attack_ready_in = maxf(attack_ready_in - delta, 0.0)
 	_lunge_rest = maxf(_lunge_rest - delta, 0.0)
 	_jump_rest = maxf(_jump_rest - delta, 0.0)
 	if _flank_rest < 0.0:

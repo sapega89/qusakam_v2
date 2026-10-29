@@ -551,7 +551,8 @@ All measured, none with a source that makes them wrong:
 - **Where:** `Maps/MayorHall.tscn` → `scorpicore_warrior.tscn` (BossEnemy / BossLogic), підлога зали — червоний килим
 - **Expected:** стоїть на підлозі й атакує за своїм патерном (D577, D660); «знову» — це вже чинили (B125, D443: бос не висить над героєм)
 - **Got:** Sapega 29.10 (скрін): «літає і не б'є знову» — бос у позі кроку над килимом (ноги вище підлоги), атак немає. Перевірити: чи не змінилась висота підлоги зали (MayorHall floor D-ID R1) відносно точки появи боса; чи не застряг BossLogic у стані руху після наших змін ворогів 29.10 (`EnemyStats.runs`, без випадів — боси на `BossLogic`, але переконатися); `verify_mayor_boss` зараз зелений — отже тест не ловить цього, додати перевірку «на підлозі і б'є за N с».
-- **Root cause found (30.10, [[critique_2026-10-30_combat_feel]], `verify_masher` [4]):** played as the player meets them, neither boss fight starts — MayorHall stays in state QUEUE, the Laboratory in WAIT, the hero stays in `event`, each boss swings 0 times in 12 s. The room's fight start is stuck, not `BossLogic` (`verify_mayor_boss` passes because it drives the cutscene by hand).
+- **Re-checked 30.10:** in the current code the Hall fight starts and the boss hits both played normally and with the cutscene skipped (Tab held): FIGHT, on the floor, 3 hits in 6 s. Masher's stuck QUEUE is its own bot (holds move, accepts dialogue boxes only, time ×4). Not reproduced → Sapega to retest with the exe of 30.10 00:06+; if it repeats, note what was done just before (skip, menu, death, F10).
+- **Earlier note (30.10, [[critique_2026-10-30_combat_feel]], `verify_masher` [4]):** played as the player meets them, neither boss fight starts — MayorHall stays in state QUEUE, the Laboratory in WAIT, the hero stays in `event`, each boss swings 0 times in 12 s. The room's fight start is stuck, not `BossLogic` (`verify_mayor_boss` passes because it drives the cutscene by hand).
 - **Also (Sapega 29.10, скрін LabBoss): «цей бос теж не б'є»** — бос Лабораторії (ящір-громила з палицею, `lab_boss.tscn`, D466/D660) стоїть поруч із героєм і не атакує. Два боси разом → шукати спільну причину в `BossLogic` / `BossEnemy`; обидва мають свої `EnemyStats` у сцені (не ті .tres, що міняли 29.10). Перевірити в exe: чи патерн взагалі стартує (тригер бою / `boss_fight_changed`).
 - **Also (Sapega, next message): «і його треба зробити огромним»** — the boss is about the size of a man; it should be huge (scale up from the feet, bosses «stay big», D816; hit / hurt shapes re-measured, D519; check the wall-hole entrance still fits).
 - **Evidence:** скрін у чаті 2026-10-29
@@ -605,12 +606,6 @@ All measured, none with a source that makes them wrong:
 - **Where:** `Scripts/Player.gd:571` — удар зі збоєм ≥ `GUARD_BREAK` 0.6 пробиває блок; у кожного фінішера ворога збій ≥ 0.6 (`DefaultEnemy.gd:930`, `FINISHER_STAGGER`)
 - **Got:** [[critique_2026-10-30_combat_feel]] №1: будь-який фінішер (і з білою/жовтою підказкою) ламає блок — шакали, серії боса. Виправлення: блокованість вирішує лише колір підказки (біла, жовта — блокуються). Суперечить D264 («удар, що збив би на 0.6+, пробиває блок») → рішення Sapega.
 - **Severity:** blocker
-- **Found:** 2026-10-30, критик бою
-
-### B253 — звичайні вороги не роблять паузи між серіями
-- **Where:** `EnemyLogic.gd:537,549` — таймер відпочинку стартує до серії й спливає під час неї (бандит: серія + відновлення 2.05 с, відпочинок 0.88–1.63 с → `ready in 0.0`)
-- **Got:** критик бою №2. Виправлення: стартувати відпочинок після `_recover()`, як `BossLogic._rest()`.
-- **Severity:** high
 - **Found:** 2026-10-30, критик бою
 
 ### B254 — рипост губиться, поки тримаєш блок
