@@ -59,7 +59,7 @@ func _initialize() -> void:
 	await _finish_dialogue(sl.get_dialogue_manager())  # репліка перед боєм
 	await create_timer(2.5).timeout
 	var enemies: Array = _enemies(road)
-	ck(enemies.size() == 3, "3 enemies spawned, D817 (%d)" % enemies.size())
+	ck(enemies.size() == 2, "a bandit and a jackal, no third (D940) (%d)" % enemies.size())
 
 	print("[0] Enemies appear on the floor at their points and move with the room (B61)")
 	var points: Array = road.get_node("EnemySpawner").get_children().filter(func(p: Node) -> bool: return p.is_in_group(&"enemy_spawn_points"))
@@ -71,6 +71,7 @@ func _initialize() -> void:
 	road.position.x += 100.0
 	ck(is_equal_approx(enemies[0].global_position.x, x_before + 100.0), "an enemy moves with its room (%.1f → %.1f)" % [x_before, enemies[0].global_position.x])
 	road.position.x -= 100.0
+	enemies.append(await _extra_enemy(road, enemies[0], 120.0))
 
 	print("[0b] An enemy dropped onto the player slides off to the floor (B58, D443)")
 	var dropped = enemies[0]
@@ -485,3 +486,12 @@ func _initialize() -> void:
 ## B187: тіло бандита виросло (x1.96), тож стала відстань 30–40 px уже налазила.
 func _at_contact(enemy: Node2D) -> Vector2:
 	return Vector2((enemy.get_node(^"CollisionShape2D") as CollisionShape2D).shape.get_rect().end.x + 14.0, 0.0)
+
+## D940: на дорозі тепер лише бандит і шакал — потрібних тесту ще ворогів ставимо самі.
+func _extra_enemy(map: Node, near: Node2D, dx: float) -> Node2D:
+	var extra: Node2D = load("res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn").instantiate()
+	extra.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_melee.tres")
+	extra.position = map.to_local(near.global_position + Vector2(dx, -40.0))
+	map.add_child(extra)
+	for i in 40: await physics_frame
+	return extra

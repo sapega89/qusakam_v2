@@ -121,12 +121,6 @@ script = ExtResource("w10")
 enemy_type = "fast"
 spawn_id = "Fight_Lizards_EnemySpawnPoint1"
 
-[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Lizards"]
-position = Vector2(2120, 368)
-script = ExtResource("w10")
-enemy_type = "fast"
-spawn_id = "Fight_Lizards_EnemySpawnPoint2"
-
 [node name="Fight_Scorpion" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("w9")
 enemy_level = 3

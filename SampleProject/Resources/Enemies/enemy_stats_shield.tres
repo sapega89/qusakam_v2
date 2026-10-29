@@ -5,7 +5,8 @@
 [resource]
 script = ExtResource("1_shield")
 enemy_type = "shield"
-speed = 115.0
+speed = 75.0
+runs = false
 stride_speed = 55.0
 base_damage = 26.0
 attack_windup = 0.8
@@ -28,4 +29,4 @@ lunge_from = 120
 lunge_to = 220
 lunge_windup = 0.55
 lunge_tell = "block"
-lunge_chance = 0.4
+lunge_chance = 0.0

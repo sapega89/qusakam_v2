@@ -306,6 +306,8 @@ func _on_enemy_died(enemy: Node) -> void:
 
 	# Проверяем все ли враги убиты
 	if get_alive_enemies_count() == 0:
+		if respawns and not _spawning:
+			Game.get_singleton().set_room_state(_room, state_key + Game.CLEARED_AT_SUFFIX, SaveSystem.get_current_playtime_sec())
 		all_enemies_defeated.emit()
 		DebugLogger.info("RoomEnemySpawner: All enemies defeated!", "RoomEnemySpawner")
 	if not reward.is_empty():

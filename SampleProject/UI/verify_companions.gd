@@ -132,6 +132,8 @@ func _initialize() -> void:
 			func(n: Node) -> bool: return n.is_in_group(&"enemies"))
 	var hero: Node2D = game.player
 	hero.mover.last_direction = 1
+	while enemies.size() < 4:
+		enemies.append(await _extra_enemy(game.map, enemies[0], 300.0))
 	for i in enemies.size():  # стоять у ряд перед героєм, не рухаються й не б'ють
 		enemies[i].set_physics_process(false)
 		enemies[i].global_position = Vector2(hero.global_position.x + 60 + i * 50, enemies[i].global_position.y)
@@ -343,3 +345,12 @@ func _initialize() -> void:
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit()
+
+## D940: на дорозі тепер лише бандит і шакал — потрібних тесту ще ворогів ставимо самі.
+func _extra_enemy(map: Node, near: Node2D, dx: float) -> Node2D:
+	var extra: Node2D = load("res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn").instantiate()
+	extra.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_melee.tres")
+	extra.position = map.to_local(near.global_position + Vector2(dx, -40.0))
+	map.add_child(extra)
+	for i in 40: await physics_frame
+	return extra

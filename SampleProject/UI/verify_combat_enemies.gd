@@ -623,29 +623,29 @@ func _token() -> void:
 		await _done(e)
 
 
-## [10] Випад і стрибок шакала (D768, D769): бандит з середньої відстані робить ривок з ударом; шакал стрибає — влучив,
+## [10] Випад і стрибок шакала (D768, D769): бандит не кидається (D929); шакал стрибає — влучив,
 ## учепився: герой стоїть, укус — лише за LATCH_BITE_AT с, тоді герой відштовхує шакала й вільний; блок і перекат крізь
 ## стрибок рятують; учепитись може лише один шакал.
 func _lunges_and_pounce() -> void:
-	print("[10] Lunges from mid range; the jackal's pounce latches, bites after a beat and is shoved off; block and roll beat it (D768, D769)")
+	print("[10] Only the jackal lunges (D929); the jackal's pounce latches, bites after a beat and is shoved off; block and roll beat it (D768, D769)")
 	var logic_script: Script = load("res://SampleProject/Scripts/Gameplay/Components/EnemyLogic.gd")
 	var hits := [0]
 	var count := func(target: Node, _source: Node, _amount: int, _critical: bool) -> void:
 		if target == hero:
 			hits[0] += 1
 	eb.damage_received.connect(count)
-	# Бандит: герой за 180 px, поза досяжністю удару (40 px), — випад дістає
+	# D929: бандит не кидається — герой за 180 px, поза досяжністю удару, і за 2 с випаду немає
 	var bandit: Node = await _spawn(BANDIT, 0.0, false)
-	bandit.enemy_logic._lunge_rest = 60.0  # сам не кидається: випади тут веде тест
-	# Спершу спокій, тоді герой на місце (D775: щойно приземлений герой — відкритий, і ворог кинувся б карати сам)
 	bandit.enemy_logic.player = hero
 	await _quiet(bandit)
 	await _place(bandit, -180)
-	var x0: float = bandit.global_position.x
-	hits[0] = 0
-	bandit.enemy_logic.perform_lunge()
-	await create_timer(bandit.enemy_stats.lunge_windup + logic_script.LUNGE_TIME + 0.15).timeout
-	ck(hits[0] >= 1 and x0 - bandit.global_position.x >= 100.0, "a bandit lunges %.0f px from 180 px away and lands (%d hit)" % [x0 - bandit.global_position.x, hits[0]])
+	var lunged := false
+	var waited := 0.0
+	while waited < 2.0:
+		await physics_frame
+		waited += 1.0 / Engine.physics_ticks_per_second
+		lunged = lunged or bandit.enemy_logic.lunging
+	ck(bandit.enemy_stats.lunge_chance == 0.0 and not lunged, "a bandit does not lunge from 180 px (D929; chance %.1f, lunged %s)" % [bandit.enemy_stats.lunge_chance, lunged])
 	await _done(bandit)
 	_heal()
 	# Шакал: герой стоїть за 200 px

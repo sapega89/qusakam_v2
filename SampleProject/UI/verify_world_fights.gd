@@ -14,7 +14,7 @@ const Kit = preload("res://SampleProject/UI/input_kit.gd")
 ## Кімната → {бій: типи ворогів}.
 const FIGHTS := {
 	"CanyonFloor": {"Fight_CanyonFloor": ["fast", "vulture"]},
-	"LizardCaves": {"Fight_Lizards": ["fast", "fast"], "Fight_Scorpion": ["tank"]},
+	"LizardCaves": {"Fight_Lizards": ["fast"], "Fight_Scorpion": ["tank"]},
 	"MesaTop": {"Fight_Lookout": ["archer", "melee"]},
 	"Dunes": {"Fight_Dunes": ["melee", "fast"]},
 	"Aqueduct": {"Fight_Aqueduct": ["archer", "fast"]},

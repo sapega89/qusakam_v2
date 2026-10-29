@@ -382,10 +382,8 @@ func load_room(room_ref: String) -> void:
 	await room_preloader.wait(path)
 
 	room_swapping.emit()
-	# D492, D565: герой повертається в локацію, з якої пішов, — її звичайні вороги знову на місцях.
-	var region: String = LocationDB.of_scene(path)
-	if region != LocationDB.of_scene(map.scene_file_path):
-		reset_ordinary_fights(region)
+	# D939: повернення в локацію ворогів не повертає — лише медитація або час (RESPAWN_AFTER).
+	reset_due_fights()
 	# Стару кімнату відʼєднуємо до заміни: тоді базовий load_room() не чекає її tree_exited і відпрацьовує
 	# синхронно, а MetSys.current_room одразу стає новою. Відʼєднуємо всю мапу, не лише RoomInstance: інакше її
 	# підлога і вороги до кінця кадру лишаються у фізиці, і _place_on_floor() збиває героя об ворога старої кімнати
@@ -610,7 +608,7 @@ func get_room_state(room: String, key: String, default: Variant = null) -> Varia
 func set_room_state(room: String, key: String, value: Variant) -> void:
 	room_state.get_or_add(room, {})[key] = value
 
-## D492: звичайний бій кімнати — повертається після медитації чи повернення в його регіон (RoomEnemySpawner.respawns).
+## D492, D939: звичайний бій кімнати — повертається після медитації або через RESPAWN_AFTER с гри (RoomEnemySpawner.respawns).
 func register_ordinary_fight(room: String, key: String, region: String) -> void:
 	room_state.get_or_add(room, {}).get_or_add(ORDINARY_FIGHTS_KEY, {})[key] = region
 
@@ -626,8 +624,27 @@ func reset_ordinary_fights(region: String = "") -> void:
 				if (room_state[room].get(key) as Dictionary).is_empty():
 					room_state[room][key + RoomEnemySpawner.WON_SUFFIX] = true
 				room_state[room].erase(key)
+				room_state[room].erase(key + CLEARED_AT_SUFFIX)
 				fights.erase(key)
 	ordinary_fights_reset.emit(region)
+
+## D939: зачищений звичайний бій повертається через стільки секунд гри (RoomEnemySpawner пише, коли його добили).
+const RESPAWN_AFTER := 600.0
+const CLEARED_AT_SUFFIX := "_cleared_at"
+
+## D939: звичайні бої, добиті щонайменше RESPAWN_AFTER с гри тому, повертаються (як після медитації, але по одному).
+func reset_due_fights() -> void:
+	var now: float = SaveSystem.get_current_playtime_sec()
+	for room: String in room_state:
+		var state: Dictionary = room_state[room]
+		var fights: Dictionary = state.get(ORDINARY_FIGHTS_KEY, {})
+		for key: String in fights.keys():
+			if not state.has(key + CLEARED_AT_SUFFIX) or now - float(state[key + CLEARED_AT_SUFFIX]) < RESPAWN_AFTER:
+				continue
+			state[key + RoomEnemySpawner.WON_SUFFIX] = true
+			state.erase(key)
+			state.erase(key + CLEARED_AT_SUFFIX)
+			fights.erase(key)
 
 ## D447, D492: герой медитує на точці збереження — звичайні вороги всього світу повертаються.
 func meditate() -> void:

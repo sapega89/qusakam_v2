@@ -139,7 +139,7 @@ func _combat() -> void:
 	em.equip_item(who, "sword", "iron_sword", sl.get_item_database().get_item("iron_sword"))  # вдягнений — в руці (D475)
 	await create_timer(3.5).timeout  # бій від екіпірування минув
 
-	await _place(600)
+	await _place(300)  # D938: захід дороги відкритий — за 600 px герой вийшов би в CaveExit
 	_mark()
 	await _tap(&"attack")
 	await process_frame
@@ -230,7 +230,7 @@ func _ambience_is(event: StringName, label: String) -> void:
 func _world() -> void:
 	print("[3] World: room ambience, footsteps by surface, jump, land, dash, pickups, level-up, UI (D276)")
 	_ambience_is(&"amb_desert_wind", "DesertRoad")
-	hero.global_position = target.global_position + Vector2(-500, -10)
+	hero.global_position = target.global_position + Vector2(600, -10)  # D938: на захід дорога відкрита — біжимо зі сходу
 	hero.velocity = Vector2.ZERO
 	for i in 30: await physics_frame
 	_mark()

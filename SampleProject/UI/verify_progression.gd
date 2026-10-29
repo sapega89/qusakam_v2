@@ -125,13 +125,20 @@ func _initialize() -> void:
 	await Kit.frames(self, 10)
 	upper = game.map.get_node("Fight_Upper")
 	ck(upper.fight_cleared(), "same region (cells → corridors): still cleared")
+	# D939: повернення в регіон ворогів більше не повертає — лише медитація або час гри (Game.RESPAWN_AFTER)
 	await game.teleport_to_room(CITY, ^"SavePoint")
-	ck(game.get_room_state(_room_of(LAB), "enemies_upper") == {}, "in the City the Laboratory fight is still won (forgotten on the way back)")
+	await game.teleport_to_room(LAB, ^"SavePoint_Entrance")
+	await Kit.frames(self, 10)
+	upper = game.map.get_node("Fight_Upper")
+	ck(upper.fight_cleared(), "back from the City: Fight_Upper stays cleared (D939, no region-return respawn)")
+	var room_state: Dictionary = game.room_state[_room_of(LAB)]
+	room_state["enemies_upper" + game.CLEARED_AT_SUFFIX] = float(room_state["enemies_upper" + game.CLEARED_AT_SUFFIX]) - game.RESPAWN_AFTER
+	await game.teleport_to_room(CELLS, ^"Arrival")
 	await game.teleport_to_room(LAB, ^"SavePoint_Entrance")
 	await Kit.frames(self, 10)
 	upper = game.map.get_node("Fight_Upper")
 	ck(game.get_room_state(_room_of(LAB), "enemies_upper") == null and not upper.fight_in_progress(),
-			"back in the Laboratory region: Fight_Upper is forgotten and starts afresh")
+			"%d s of play after the clear: Fight_Upper is forgotten and starts afresh (D939)" % int(game.RESPAWN_AFTER))
 	ck(upper.fight_won(), "but it still counts as won (lab_corridors_complete does not wait for it again)")
 	upper.spawn_all_enemies()
 	await create_timer(4.0).timeout

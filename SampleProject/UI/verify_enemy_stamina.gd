@@ -318,7 +318,8 @@ func _rates() -> void:
 		var ratio := float(with_st.strikes) / maxf(1.0, float(without.strikes))
 		print("  %s: %d strikes, winded %d× with stamina; %d without (×%.2f)" % [STATS[path], with_st.strikes, with_st.winded, without.strikes, ratio])
 		ck(ratio >= 0.7, "%s keeps at least 70 %% of its tempo (×%.2f)" % [STATS[path], ratio])
-		ck(with_st.winded >= 1 or with_st.breaths >= 1, "%s runs short at least once (winded %d, catch_breath %d)" % [STATS[path], with_st.winded, with_st.breaths])
+		# D929: бандит без випадів (35) тримає темп ударів по 20 — видихається лише шакал
+		ck(path == BANDIT or with_st.winded >= 1 or with_st.breaths >= 1, "%s runs short at least once (winded %d, catch_breath %d)" % [STATS[path], with_st.winded, with_st.breaths])
 
 func _count(path: String, endless: bool) -> Dictionary:
 	var enemy := await _spawn(path, 0.0)

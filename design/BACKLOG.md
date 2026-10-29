@@ -74,8 +74,12 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 Сейв перед кожною елітою; між боями щонайменше екран тиші; еліта анонсована (поїдає здобич, змінене оточення); вороги стоять на мапі від початку, не з'являються з тригера. Почати з DesertRoad.
 **Resume:** таблиця боїв DesertRoad (x тригера, склад, еліта, відстань до попереднього) → показати Sapega перестановку → `auto_spawn_on_ready` + видимість ворогів у `RoomEnemySpawner`.
 
+### Дрібниці інтерфейсу — D942
+Одна сцена `Objects/SavePoint.tscn` замість ручних копій точок збереження в кожній кімнаті (O12, Sapega 29.10 «сто пудово»; DesertRoad тепер має 5).
+Силует-заглушка для портретів загону без арту (O1); імена загону перекладаються з мовою (O2); дата слота `23.09.2026 00:05` / `2026-09-23 00:05` (O6).
+
 ### Режим розробника — [[dev_menu_plan]]
-Нічого не зроблено. Є: `add_coins`, `is_invulnerable`, `teleport_to_room`, `LocationDB.all()`. Чекає Q128 (у яких збірках).
+Нічого не зроблено. Є: `add_coins`, `is_invulnerable`, `teleport_to_room`, `LocationDB.all()`. Q128 → D943: у всіх збірках, F10.
 **Resume:** після відповіді на Q128 — slice 1: `UI/Components/dev_menu.tscn` + action `dev_menu` + `verify_dev_menu.gd`.
 ### ✅ DONE 2026-10-20 — Painted terrain in the outdoor rooms — D248, D249
 All six outdoor rooms walk on painted ground (Canyon earlier; Village, DesertRoad, CityGates, City, LaboratoryOutside

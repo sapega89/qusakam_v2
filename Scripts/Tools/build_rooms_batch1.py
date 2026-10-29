@@ -181,8 +181,7 @@ def lizard_cave() -> None:
     # герой виходить тим, чим зайшов (Sapega 2026-10-26, room_art_audit).
     r.marker("Arrival", CAVE_MOUTH_X, STAND)
     r.door("ExitDoor", CAVE_MOUTH_X, STAND, "Canyon", "LizardCaveDoor")
-    r.fight("Fight_CaveLizards", 520, 120, 2, [("EnemySpawnPoint1", 760, FLOOR - 16, "fast", ""),
-                                                ("EnemySpawnPoint2", 900, FLOOR - 16, "fast", "")])
+    r.fight("Fight_CaveLizards", 520, 120, 2, [("EnemySpawnPoint1", 760, FLOOR - 16, "fast", "")])  # D925: у каньйоні шакали по одному
     r.gate("Gate_Shrine", 1240, "lizard_shrine")
     r.note("ShamanMural", 1440, STAND - 20, "lizard_shrine_mural")
     r.chest("Chest_Shrine", 1600, FLOOR, charm="deep_gourd_amulet")

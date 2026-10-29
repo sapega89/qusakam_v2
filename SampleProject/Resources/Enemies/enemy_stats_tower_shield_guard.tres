@@ -28,4 +28,4 @@ lunge_from = 120
 lunge_to = 220
 lunge_windup = 0.55
 lunge_tell = "block"
-lunge_chance = 0.4
+lunge_chance = 0.0

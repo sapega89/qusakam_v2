@@ -45,7 +45,7 @@ const OATH_LEVEL := 5
 ## Сусідні бої — у різних кімнатах: Game.load_room не перевантажує кімнату, що вже стоїть.
 const FIGHTS := [
 	{"name": "lone bandit (Village)", "room": "Village", "fight": "EnemySpawner", "cls": "single"},
-	{"name": "road's first fight: 2 bandits, a jackal", "room": "DesertRoad", "fight": "EnemySpawner", "cls": "group"},
+	{"name": "road's first fight: a bandit and a jackal", "room": "DesertRoad", "fight": "EnemySpawner", "cls": "group"},
 	{"name": "City Gates: 2 bandits, archer", "room": "CityGates", "fight": "EnemySpawner", "cls": "group"},
 	{"name": "lone bandit brute", "room": "DesertRoad", "fight": "Fight_LoneElite", "cls": "elite"},
 	{"name": "Lab middle: bandit, 2 jackals, scorpion", "room": "LabMiddleFloor", "fight": "Fight_Middle", "cls": "group"},

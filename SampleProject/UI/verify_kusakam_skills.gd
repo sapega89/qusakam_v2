@@ -185,6 +185,10 @@ func _initialize() -> void:
 			n.set_physics_process(false)
 			enemies.append(n)
 	ck(enemies.size() >= 2, "enemies on the road (%d)" % enemies.size())
+	while enemies.size() < 3:
+		var extra: Node2D = await _extra_enemy(game.map, enemies[0], 200.0)
+		extra.set_physics_process(false)
+		enemies.append(extra)
 	player = game.player
 	player.mover.last_direction = 1
 	var front: Node2D = enemies[0]
@@ -294,3 +298,12 @@ func _initialize() -> void:
 ## до удару. B187: тіло бандита виросло (x1.96), тож стала відстань 30 px вже налазила.
 func _at_contact(enemy: Node2D) -> Vector2:
 	return Vector2((enemy.get_node(^"CollisionShape2D") as CollisionShape2D).shape.get_rect().end.x + 14.0, 0.0)
+
+## D940: на дорозі тепер лише бандит і шакал — потрібних тесту ще ворогів ставимо самі.
+func _extra_enemy(map: Node, near: Node2D, dx: float) -> Node2D:
+	var extra: Node2D = load("res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn").instantiate()
+	extra.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_melee.tres")
+	extra.position = map.to_local(near.global_position + Vector2(dx, -40.0))
+	map.add_child(extra)
+	for i in 40: await physics_frame
+	return extra

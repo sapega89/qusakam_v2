@@ -460,7 +460,7 @@ func handle_chase_state(delta: float):
 
 	var direction_x: float = player.global_position.x - enemy.global_position.x
 	var away := _hero_moving_away()
-	pace = RUN_PACE if distance_to_player_x > engage_range() * RUN_FROM or away else 1.0
+	pace = RUN_PACE if enemy.enemy_stats.runs and (distance_to_player_x > engage_range() * RUN_FROM or away) else 1.0
 	if away and state_timer < delta * 1.5:
 		tactic.emit(&"press")  # тисне героя, що відходить: біжить за ним
 	if abs(direction_x) <= 5.0:
@@ -598,11 +598,11 @@ func _flank_step(delta: float) -> void:
 	_flank_left -= delta
 	var target_x: float = player.global_position.x + flank_side * engage_range()
 	var left := target_x - enemy.global_position.x
-	pace = FLANK_PACE
+	pace = FLANK_PACE if enemy.enemy_stats.runs else STEP_IN_PACE
 	if _flank_left <= 0.0 or absf(left) <= 8.0 or not can_step(signi(int(signf(left)))):
 		_end_flank()
 		return
-	_walk(1 if left > 0.0 else -1, speed * FLANK_PACE)
+	_walk(1 if left > 0.0 else -1, speed * pace)
 
 func _end_flank() -> void:
 	flank_side = 0

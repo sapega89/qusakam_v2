@@ -51,7 +51,7 @@ Runnable specs. One per system, sliced so each slice ships on its own.
 - [[skills_combat_plan]] — ✅ the combat vertical slice for skills (Phase 5.5)
 - [[skill_trees_plan]] — BACKLOG 22: Holy Warrior trunk + Paladin / Dark Knight / Warden trees, the oath in the City, respec, level cap 99 (D279–D285)
 - [[world_expansion_plan]] — BACKLOG 23: DesertRoad 2 → 6 cells, three more fights, ledges with pickups; XP curve in data, level 5 at the City (D296–D299); Laboratory split outlined
-- [[dev_menu_plan]] — режим розробника: HP, урон, безсмертя, телепорт по локаціях, золото; nothing built; Q128 (у яких збірках)
+- [[dev_menu_plan]] — режим розробника: HP, урон, безсмертя, телепорт по локаціях, золото; nothing built; D943: у всіх збірках, F10
 - [[journal_codex_plan]] — BACKLOG 13: Journal sections Quests / Characters / Bestiary (D290)
 - [[souls_combat_plan]] — BACKLOG 4 + 15: combos, heavy, staggers both ways, block/parry, double dash, grips, sheathing (D264–D270); town walking revoked (D266) — the hero runs everywhere
 - [[ranged_plan]] — BACKLOG 40: the hero's bow like Skul (quick shot on the press, hold to charge, arrows fly straight) and the desert archer (keeps distance, red glint, arrows you block / parry / roll), D380–D387

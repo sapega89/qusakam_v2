@@ -198,7 +198,7 @@ func _initialize() -> void:
 	ck(player.global_position.distance_to(cave_exit.global_position) < 48.0,
 			"the hero arrives at that opening, the door he came by (%s)" % player.global_position)
 	var shrine: Node = game.map.get_node("Gate_Shrine")
-	ck(_kinds("Fight_CaveLizards") == ["fast", "fast"], "a few small enemies in the open part (%s)" % [_kinds("Fight_CaveLizards")])
+	ck(_kinds("Fight_CaveLizards") == ["fast"], "one jackal at a time (D925) in the open part (%s)" % [_kinds("Fight_CaveLizards")])
 	await _stand(Vector2(1100, 380))
 	await _hold(&"move_right", 0.8)
 	for i in 10: await physics_frame

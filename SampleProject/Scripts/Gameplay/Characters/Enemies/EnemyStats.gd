@@ -12,6 +12,8 @@ class_name EnemyStats
 ## Під яку швидкість намальовано крок анімації walk, px/с (D767): темп walk — speed / stride_speed, щоб ноги не ковзали,
 ## коли ворог ходить швидше. 0 — та сама, що speed.
 @export var stride_speed: float = 0.0
+## Біжить до бою й за героєм у RUN_PACE (D754). false — лише крок (D934: бандит і щитоносець ходять, не бігають).
+@export var runs: bool = true
 
 @export_group("Combat")
 @export var base_damage: float = 10.0

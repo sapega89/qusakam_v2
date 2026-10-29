@@ -162,11 +162,6 @@ position = Vector2(760, 400)
 script = ExtResource("r5")
 enemy_type = "fast"
 
-[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_CaveLizards"]
-position = Vector2(900, 400)
-script = ExtResource("r5")
-enemy_type = "fast"
-
 [node name="Gate_Shrine" parent="." instance=ExtResource("r6")]
 position = Vector2(1240, 416)
 gate_id = "lizard_shrine"

@@ -355,7 +355,7 @@ LIVING = {
                         critters=[("critter_butterfly", 0, 800), ("critter_bird", 0, 2200), ("critter_bat", 0, 3260)],
                         air=[pollen(3456), ("dust", 0, 2500, 336)]),
     "SmugglersStash": dict(critters=[("critter_bat", 0, 420)], air=[("atmo_motes", 0, 600, 250)]),
-    "LizardCaves": dict(fights=[("Fight_Lizards", 0, 1800, 3, 0, [("fast", 1980), ("fast", 2120)]),
+    "LizardCaves": dict(fights=[("Fight_Lizards", 0, 1800, 3, 0, [("fast", 1980)]),
                                 ("Fight_Scorpion", 0, 3600, 3, 0, [("tank", 3780)])],
                         critters=[("critter_bat", 0, 1100), ("critter_bat", 0, 2700)],
                         air=[("atmo_fireflies", 0, 2600, 250, {"emission_rect_extents": "Vector2(2400, 110)", "amount": 32})]),

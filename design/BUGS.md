@@ -423,12 +423,6 @@ coin / settings icons of `combat_hud_top` in the top-right corner. The tutorial 
 "The Map" describes the minimap, so this matters to players. Parked — needs a call on
 where the minimap lives next to the HUD.
 
-### O15 — Map window toggles tracking on raw `KEY_D`, which is also `move_right`
-`Game.tscn` (MapWindow inline script, `_input`): `elif event.keycode == KEY_D: show_delta = not show_delta`
-runs on every D press, map open or not, so walking right flips the tracking arrow.
-Found 2026-10-12 while writing the tutorial ([[tutorial_mapping]]). Parked — no
-visible effect unless the map is open; fix by an InputMap action or a `visible` guard.
-
 ### O14 — World Map tab does not read as a map (Sapega, 2026-10-12)
 Sapega: "карта в меню гри поки мені не ясна, але то не критично". Parked, not a
 defect — no expectation was stated. What the tab shows today
@@ -439,11 +433,11 @@ defect — no expectation was stated. What the tab shows today
   13 named markers have **no backing data**);
 - `EXPLORED 000%`;
 - the player marker sits at the viewport's top-left corner (x≈318, y≈50), not in a cell.
-Before acting, ask Sapega what the tab is for — a MetSys room map, a world/region
+**Sapega 29.10 → D941:** обидва рівні — мапа світу, клік на локацію відкриває її кімнати. (Was: before acting, ask Sapega what the tab is for — a MetSys room map, a world/region
 overview like the Figma `94:609` art, or both — and check the marker position in a
-real save with explored rooms; it may be centring on an empty start.
+real save with explored rooms; it may be centring on an empty start.)
 
-### O12–O13 — from the scene inventory audit, 2026-09-29
+### O12 — from the scene inventory audit, 2026-09-29 (Sapega 29.10: O12 — make `SavePoint.tscn`, BACKLOG; O13 closed as is)
 Both are "code where a scene would be conventional". See [[scene_inventory]].
 - **O12 — save points are 10 hand-built `Area2D` copies and there is no
   `SavePoint.tscn`.** `Scripts/SavePoint.gd` is attached inline to an `Area2D` +
@@ -455,18 +449,8 @@ Both are "code where a scene would be conventional". See [[scene_inventory]].
   art, which nothing uses — that is art, not a structural requirement. It bothered
   the reviewer because 10 copies means 10 places to change when the pillar art or
   the prompt label lands.
-- **O13 — `NpcActionMenu` is the only `UI/Components/` member with a `.gd` and no
-  `.tscn`.** `Scripts/Gameplay/NPCs/NpcBase.gd:22` does `NpcActionMenu.new()`
-  against `UI/Components/npc_action_menu.gd:2`; the other ten components in that
-  folder are all `.gd` + `.tscn` pairs. `CLAUDE.md` asks for shared reusable
-  components and a common Theme, which the code-built menu satisfies — nothing says
-  a component must be a scene. Parked, not a defect. (B40, its 2px inter-row rule, fixed
-  2026-10-16 by `NPC_MENU_GAP = -BORDER_WIDTH`, #63.)
 
-### O9–O11 — from the NPC / interaction pass, 2026-09-29
-- **O9 — pickup modal is ~440×280 design px for ~90px of content**, leaving 84px
-  above and 86px below. D100 approves *using* the shared modal family but nothing
-  specifies its size. Resolved with B26/B36 (#71, #74): the shared modal now sizes to its content.
+### O10–O11 — from the NPC / interaction pass, 2026-09-29
 - **O10 — Journal's two content columns are ~39px apart** (list ends x=939, detail
   rule starts x=979) — off the 2/4/8/12/16/24/32/48 scale in both directions. No
   Figma measurement exists for this frame.
@@ -477,45 +461,10 @@ Both are "code where a scene would be conventional". See [[scene_inventory]].
 > **Coverage limit, not a finding:** the NPC menu and prompt fixtures render on flat
 > `#1b1916` / `#111118`, so prompt legibility **over real world art** is untested.
 
-### O4–O8 — from the save/load pass, 2026-09-29
+### O8 — from the save/load pass, 2026-09-29 (O4 closed: the prompt blinks, `MainMenu.gd:88`; O5–O7 decided, D942)
 All measured, none with a source that makes them wrong:
-- **O4 — splash prompt colour.** "PRESS ANY BUTTON" measures `#a4a4a5` = white @64%
-  over `#050508`, not `TEXT_SECONDARY #a1a1a1`. Almost certainly a mid-pulse frame
-  of a fade — its flanking ornaments are pure `#ffffff`.
-- **O5 — no text hierarchy on the slot card.** Timestamp, "Kael", playtime, "No save
-  data available" and the "SAVE DATA MANAGEMENT" eyebrow all resolve to `#ffffff`.
-  `TEXT_SECONDARY` appears only in the bottom hint bar. Needs the frame to call.
-- **O6 — date format.** `9/23/2026 00:05` — unpadded US M/D/YYYY beside a 24h clock.
-  No format token or decision exists.
-- **O7 — modal button voice and default focus.** "Yes"/"No" while the hint bar
-  speaks verbs ("Confirm", "Return", "Delete"); and the **destructive** `Yes` is the
-  default-focused button. No project source for either.
-- **O8 — splash copyright weight.** ~11px legal microcopy renders essentially white
+- **O8 — splash copyright weight.** (Checked 29.10: `CopyrightLabel` theme row sets font and size only, no colour → default white; a `TEXT_SECONDARY` colour there would fix it.) ~11px legal microcopy renders essentially white
   (brightest `#eeeeee`).
-
-### O1 — Party portraits are flat colour squares, and the fourth is empty
-- **Where:** party status panel, all menu screens
-- **Why it bothered the reviewer:** three members show flat blue / red / purple
-  squares, the fourth ("Три темніх жреца") an empty black one — so even the
-  placeholders are inconsistent with each other
-- **No source:** placeholder portrait art is a known gap; nothing specifies what
-  a missing portrait should look like
-- **Found:** 2026-09-29, screenshot review (agent pass)
-
-### O2 — Party names are Cyrillic while the UI language is English
-- **Where:** party status panel, visible on every menu screen; the Game tab shows
-  English selected
-- **Why it bothered the reviewer:** mixed scripts in one frame
-- **No source:** character names are content data. `LocalizationManager` ships two
-  languages (D67), but nothing says proper nouns are translated
-- **Found:** 2026-09-29, screenshot review (agent pass)
-
-### O3 — Controls table labels look a step smaller than Audio/Game row labels
-- **Where:** Settings → Controls vs Audio/Game row labels
-- **Why it bothered the reviewer:** "Move Up" reads smaller than "Master Volume"
-- **No source:** font size cannot be measured off a PNG with confidence, and
-  **D48** may cover the widget anyway. Resolve by reading the scene, not the image
-- **Found:** 2026-09-29, screenshot review (agent pass)
 
 > **Resolved during triage, not parked:** the bright green HP bar was queried as
 > off-palette. It is `UITokens.HP_FILL = #2ecc71` — a real token. Not a finding.
@@ -575,14 +524,6 @@ All measured, none with a source that makes them wrong:
 - **Got:** Sapega 29.10 (скрін): «це фігня, а не схованка» — герой просто ховається за каменем переднього плану, нічого не відкривається й нічого не дається. Потрібне рішення Sapega (змінює D765): який вигляд має секрет (прохід / фальшива стіна / окрема кімната) і що він дає (скриня, гроші, предмет). **Sapega 29.10 → D928:** мерехтіння достатньо (можна й не помітити), лише зробити його блакитним. Лишається: секрет має щось давати (див. B229).
 - **Evidence:** скрін у чаті 2026-10-29
 - **Severity:** visual (дизайн секретів)
-- **Found:** 2026-10-29, плейтест Sapega
-
-### B239 — на початку Пустельної дороги цегляна стіна там, звідки ми прийшли
-- **Where:** `Maps/DesertRoad.tscn` → `TileMap/Gate` (тайловий шар-брама на західному краю), ним керує `Controller_Gate` (`Scripts/Gameplay/GateController.gd`, відчиняє/зачиняє за станом сцени або квестом)
-- **Expected:** якщо прохід назад закритий, гравець бачить чому (обвал, зачинена брама, яку зачинив хтось у сюжеті), і закриття виглядає частиною світу, а не цегляною тайловою колоною посеред пустелі
-- **Got:** скрін Sapega 29.10: «не зрозуміло, чому тут стіна, хоча ми прийшли зліва» — ліворуч від героя вертикальна колона з цегляних тайлів на тлі дюн, без жодного пояснення. Що вирішити (Sapega): (a) прохід назад має бути відкритим — прибрати браму з цього краю; (b) закритий за сюжетом — тоді замінити тайли на намальовану перешкоду (обвал каміння / зачинена брама каньйону) і дати репліку Кусакама при першому підході. **Sapega 29.10 → D938:** прибрати, шлях назад відкритий (герой сам спускається з каньйону).
-- **Evidence:** скрін у чаті 2026-10-29
-- **Severity:** visual
 - **Found:** 2026-10-29, плейтест Sapega
 
 ### B240 — незрозуміло, чому біля мерчанта бандити

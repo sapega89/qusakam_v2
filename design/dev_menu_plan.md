@@ -1,7 +1,6 @@
 ---
 type: plan
 status: planned
-blocked-by: [Q128]
 ---
 
 # Режим розробника (dev menu) — plan
