@@ -904,6 +904,13 @@ func stagger(duration: float, from_x: float) -> void:
 	EventBus.enemy_staggered.emit(self, duration)
 	last_stagger_source = &""  # наступний збій без джерела (щит розбито, навичка) — «інше»
 
+## Мікростан (D924): третій удар серії чи важкий героя на мить зриває дію — поза збою, без відштовхування (D778)
+## і без enemy_staggered: це не збій стійкості (D777), лише смикання.
+func flinch(duration: float) -> void:
+	enemy_logic.stagger(duration)
+	if enemy_view.has_stagger_pose():
+		enemy_view.play_stagger(enemy_logic.stun_left)
+
 ## Захист розбито (D495): щит чи броня злетіли, і ворог ще в збої від цього — Soul Harvest його добиває (D878).
 ## У звичайного ворога захисту немає.
 func guard_broken() -> bool:

@@ -73,6 +73,7 @@ func _initialize() -> void:
 	await _boss()
 	await _jackal_tell()
 	await _roll_buffer_and_late_block()
+	await _micro_stun()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit()
@@ -266,3 +267,44 @@ func _roll_buffer_and_late_block() -> void:
 	_press(&"block", false)
 	for i in 4: await physics_frame
 	ck(raised, "the block is up in the frame of the press, before the physics step")
+
+
+## [7] D924: третій удар серії й важкий удар героя — мікростан ворога (смикання без відштовхування) і мінус витривалість;
+## перші два удари серії не збивають (D778).
+func _micro_stun() -> void:
+	print("[7] D924: the third hit and the heavy flinch the enemy and cost it stamina; hits 1-2 do not")
+	await create_timer(1.0).timeout
+	var enemy: Node = await _spawn(BANDIT, 60.0)
+	enemy.poise_max = 999  # тут — мікростан, не злам стійкості
+	enemy.poise = 999
+	enemy.Max_Health = 99999
+	enemy.current_health = enemy.Max_Health
+	hero.combat.attack_cooldown_time = 0.0
+	var stun := []
+	var stamina := []
+	for i in 3:
+		hero.global_position = enemy.global_position + Vector2(-26, 0)
+		hero.velocity = Vector2.ZERO
+		enemy.enemy_logic.stun_left = 0.0
+		var before: float = enemy.stamina.current
+		await physics_frame
+		hero.combat.perform_attack(1)
+		await create_timer(0.35).timeout
+		stun.append(enemy.enemy_logic.stun_left > 0.0)
+		stamina.append(before - enemy.stamina.current)
+	ck(stun == [false, false, true] and is_equal_approx(stamina[2], 15.0) and stamina[0] == 0.0,
+			"hits 1-2 nothing, the third flinches and takes 15 stamina (stun %s, stamina %s)" % [stun, stamina])
+	await create_timer(1.0).timeout
+	enemy.enemy_logic.stun_left = 0.0
+	enemy.stamina.current = enemy.stamina.max_stamina
+	hero.global_position = enemy.global_position + Vector2(-26, 0)
+	hero.combat.heavy_attack(1)
+	var t := 0.0
+	var flinched := false
+	while t < 2.0 and not flinched:
+		await physics_frame
+		t += 1.0 / Engine.physics_ticks_per_second
+		flinched = enemy.enemy_logic.stun_left > 0.0
+	ck(flinched and is_equal_approx(enemy.stamina.max_stamina - enemy.stamina.current, 25.0),
+			"the heavy flinches it and takes 25 stamina (%.0f)" % (enemy.stamina.max_stamina - enemy.stamina.current))
+	enemy.queue_free()

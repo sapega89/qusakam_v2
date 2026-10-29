@@ -141,6 +141,10 @@ var _drink_heal: int = 0
 var _poise: int = POISE_LIGHT
 ## Чим б'є поточний удар — для DefaultEnemy.last_stagger_source (звіт verify_masher, D777).
 var _poise_source: StringName = &"light"
+## D924: удар, що дає мікростан, — &"finisher" (третій серії) чи &"heavy"; інакше &"".
+var _micro: StringName = &""
+## D924: [збиття, с; мінус витривалості ворога]. Бос — лише витривалість; почату серію (committed, D576) збиває лише важкий.
+const MICRO_STUN: Dictionary = {&"finisher": [0.2, 15.0], &"heavy": [0.35, 25.0]}
 ## Кнопку блоку тримають (Player._unhandled_input); блок починається, щойно герой вільний.
 var block_held: bool = false
 var _block_time: float = 0.0
@@ -219,6 +223,16 @@ func _hitbox_shape() -> RectangleShape2D:
 ## Влучання: відкидання і стійкість ворога (D265).
 func _on_damage_applied(target: Node, damage: int) -> void:
 	_hit_effects(target, damage, _poise, knockback, player.global_position.x, _poise_source)
+	_micro_stun(target)
+
+func _micro_stun(target: Node) -> void:
+	if not MICRO_STUN.has(_micro) or not target is DefaultEnemy or not target.is_alive():
+		return
+	var effect: Array = MICRO_STUN[_micro]
+	target.stamina.drain(effect[1])
+	if target.is_in_group(GameGroups.BOSS) or (_micro == &"finisher" and target.enemy_logic.committed):
+		return
+	target.flinch(effect[0])
 
 ## Влучання стріли героя (D381): та сама стійкість, пасивки й відкидання, що й від удару, — від точки, звідки летіла
 ## стріла ([param from_x]); підстрелений ворог повертається до героя, навіть якщо ще його не бачив.
@@ -457,6 +471,7 @@ func perform_attack(last_direction: int) -> void:
 	knockback = _weapon_knockback
 	_poise = _poise_of(POISE_LIGHT)
 	_poise_source = &"light"
+	_micro = &"finisher" if finisher else &""
 	if finisher:
 		attack_cooldown = attack_cooldown_time  # відновлення після серії
 	_load_hit(roundi(hit_damage() * _combo_damage()[combo_step]), 0 if finisher else LIGHT_TARGETS)
@@ -526,6 +541,7 @@ func _strike_heavy() -> void:
 	# D535: Heavy Hand — важкий удар б'є по стійкості сильніше
 	_poise = roundi(_poise_of(POISE_HEAVY) * (1.0 + ServiceLocator.get_skill_manager().passive_value("heavy_poise")))
 	_poise_source = &"heavy"
+	_micro = &"heavy"
 	_load_hit(roundi(hit_damage() * heavy_damage))
 	_step(HEAVY_STEP)
 	_play(&"HeavyStrike")
@@ -544,6 +560,7 @@ func _riposte(last_direction: int) -> void:
 	knockback = maxf(_weapon_knockback, heavy_knockback)
 	_poise = RIPOSTE_POISE
 	_poise_source = &"riposte"
+	_micro = &""
 	_load_hit(roundi(hit_damage() * RIPOSTE_DAMAGE))
 	_step(HEAVY_STEP)
 	_play(&"HeavyStrike")

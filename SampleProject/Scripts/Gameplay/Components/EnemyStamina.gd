@@ -70,6 +70,16 @@ func spend(kind: StringName) -> void:
 	_emit()
 
 
+## Удар героя забрав [param amount] витривалості (D924): як власний удар — дійшла до нуля, виснажений.
+func drain(amount: float) -> void:
+	current = maxf(0.0, current - amount)
+	_delay_left = delay
+	if current <= 0.0:
+		exhausted = true
+		_winded_due = true
+	_emit()
+
+
 ## Удар скінчився: якщо він вичерпав шкалу — ворог видихається ([signal winded]). true — видихнувся.
 func take_winded() -> bool:
 	if not _winded_due:
