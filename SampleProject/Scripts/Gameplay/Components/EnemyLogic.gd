@@ -1048,7 +1048,8 @@ func perform_lunge() -> void:
 	var latched_on := false
 	if not _interrupted():
 		var direction := last_direction if last_direction != 0 else 1
-		var gap: float = absf(player.global_position.x - enemy.global_position.x) - LUNGE_SHORT
+		# B257: не далі за lunge_to (D768) — гравця, що відкотився геть, випад не наздоганяє через пів екрана
+		var gap: float = minf(absf(player.global_position.x - enemy.global_position.x), stats.lunge_to) - LUNGE_SHORT
 		enemy.start_attack(direction)
 		enemy.stamina.spend(&"pounce" if stats.pounce else &"lunge")  # D824
 		start_knockback(direction * maxf(gap, 0.0), false, LUNGE_TIME)
