@@ -551,6 +551,7 @@ All measured, none with a source that makes them wrong:
 - **Where:** `Maps/MayorHall.tscn` → `scorpicore_warrior.tscn` (BossEnemy / BossLogic), підлога зали — червоний килим
 - **Expected:** стоїть на підлозі й атакує за своїм патерном (D577, D660); «знову» — це вже чинили (B125, D443: бос не висить над героєм)
 - **Got:** Sapega 29.10 (скрін): «літає і не б'є знову» — бос у позі кроку над килимом (ноги вище підлоги), атак немає. Перевірити: чи не змінилась висота підлоги зали (MayorHall floor D-ID R1) відносно точки появи боса; чи не застряг BossLogic у стані руху після наших змін ворогів 29.10 (`EnemyStats.runs`, без випадів — боси на `BossLogic`, але переконатися); `verify_mayor_boss` зараз зелений — отже тест не ловить цього, додати перевірку «на підлозі і б'є за N с».
+- **Root cause found (30.10, [[critique_2026-10-30_combat_feel]], `verify_masher` [4]):** played as the player meets them, neither boss fight starts — MayorHall stays in state QUEUE, the Laboratory in WAIT, the hero stays in `event`, each boss swings 0 times in 12 s. The room's fight start is stuck, not `BossLogic` (`verify_mayor_boss` passes because it drives the cutscene by hand).
 - **Also (Sapega 29.10, скрін LabBoss): «цей бос теж не б'є»** — бос Лабораторії (ящір-громила з палицею, `lab_boss.tscn`, D466/D660) стоїть поруч із героєм і не атакує. Два боси разом → шукати спільну причину в `BossLogic` / `BossEnemy`; обидва мають свої `EnemyStats` у сцені (не ті .tres, що міняли 29.10). Перевірити в exe: чи патерн взагалі стартує (тригер бою / `boss_fight_changed`).
 - **Also (Sapega, next message): «і його треба зробити огромним»** — the boss is about the size of a man; it should be huge (scale up from the feet, bosses «stay big», D816; hit / hurt shapes re-measured, D519; check the wall-hole entrance still fits).
 - **Evidence:** скрін у чаті 2026-10-29
@@ -585,3 +586,53 @@ All measured, none with a source that makes them wrong:
 - **Partly fixed (29.10, D948):** no save → the game starts over; the with-a-save path still to be checked against a real save (meditate-before-save order).
 - **Severity:** blocker
 - **Found:** 2026-10-29, плейтест (ПК друга Sapega)
+
+### B250 — у Лабораторії лампа й кристал висять на 64 px над підлогою
+- **Where:** `Maps/Laboratory.tscn` → `Decor/Lamp2`, `Decor/Crystal1` (y 320, підлога 384)
+- **Expected:** стоять на підлозі / на столі
+- **Got:** [[critique_2026-10-30_floating_art]]: лампа в повітрі на висоті голови героя; кристал ковзає по меблях фону, що прокручується (стоїть на столі лише в одній точці камери). Виправлення: y 320 → 384 (або прибрати кристал з паралаксного столу).
+- **Evidence:** `design/shots/critique_2026-10-30/`
+- **Severity:** visual
+- **Found:** 2026-10-30, критик кімнат
+
+### B251 — світла лінія по верхньому краю підлоги в підвалах, горищах і таборі
+- **Where:** рядок 0 `Assets/Backgrounds/Cellar/gen_floor.png` (CisternStash, CollapsedDrain, MalikStash), `ElderHouse/gen_floor.png` (ElderHouse, PigeonLoft, TavernAttic), слабше `BanditCamp/gen_floor.png` — те саме, що B224 (1)
+- **Got:** світлий рядок на всю ширину читається як окрема смуга. Виправлення: рядок 0 кольором рядка 1.
+- **Severity:** cosmetic
+- **Found:** 2026-10-30, критик кімнат
+
+### B252 — заблокований фінішер ворога все одно б'є повною шкодою
+- **Where:** `Scripts/Player.gd:571` — удар зі збоєм ≥ `GUARD_BREAK` 0.6 пробиває блок; у кожного фінішера ворога збій ≥ 0.6 (`DefaultEnemy.gd:930`, `FINISHER_STAGGER`)
+- **Got:** [[critique_2026-10-30_combat_feel]] №1: будь-який фінішер (і з білою/жовтою підказкою) ламає блок — шакали, серії боса. Виправлення: блокованість вирішує лише колір підказки (біла, жовта — блокуються). Суперечить D264 («удар, що збив би на 0.6+, пробиває блок») → рішення Sapega.
+- **Severity:** blocker
+- **Found:** 2026-10-30, критик бою
+
+### B253 — звичайні вороги не роблять паузи між серіями
+- **Where:** `EnemyLogic.gd:537,549` — таймер відпочинку стартує до серії й спливає під час неї (бандит: серія + відновлення 2.05 с, відпочинок 0.88–1.63 с → `ready in 0.0`)
+- **Got:** критик бою №2. Виправлення: стартувати відпочинок після `_recover()`, як `BossLogic._rest()`.
+- **Severity:** high
+- **Found:** 2026-10-30, критик бою
+
+### B254 — рипост губиться, поки тримаєш блок
+- **Where:** `PlayerCombat.gd:447,453` — атака в стані BLOCK іде в буфер 0.2 с і спливає, поки блок тримають
+- **Got:** критик бою №3: ламає петлю D504 парирування → рипост. Виправлення: атака з блоку знімає блок і б'є одразу.
+- **Severity:** high
+- **Found:** 2026-10-30, критик бою
+
+### B255 — герой «застигає» під кількома ворогами (stunlock)
+- **Where:** збій героя до 1.0 с (громила) / 0.6 с (фінішер), анімація `Hurt` 0.25 с (далі застиглий кадр), невразливості після удару немає; другий ворог влучає ~0.65 с після першого
+- **Got:** критик бою №4. Виправлення: збій героя ≤ 0.5 с і `Hurt` на весь збій; поки герой у збої — жоден інший ворог не запалює підказку.
+- **Severity:** high
+- **Found:** 2026-10-30, критик бою
+
+### B256 — блок під час перекату зупиняє перекат посередині (з коду, не перевірено)
+- **Where:** `PlayerCombat.gd:304-306` — блок стартує без перевірки перекату (з T5 `raise_block_now` перевіряє `is_rolling`, але `_physics_process` — ні)
+- **Got:** критик бою. Перевірити тестом; виправлення — не піднімати блок, поки перекат.
+- **Severity:** medium
+- **Found:** 2026-10-30, критик бою
+
+### B257 — випад шакала не має межі відстані
+- **Where:** `EnemyLogic` lunge — `gap` міряють у мить удару, а не підказки, тож шакал пролітає до ~435 px за 0.2 с (D768 і коментар кажуть інакше)
+- **Got:** критик бою. Виправлення: фіксувати ціль і межу `lunge_to` у мить підказки.
+- **Severity:** medium
+- **Found:** 2026-10-30, критик бою

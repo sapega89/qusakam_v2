@@ -3,7 +3,7 @@ class_name UICombatHudTop
 
 const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 
-## Верхній ряд бойового HUD: квест + валюта + кнопка меню.
+## Верхній ряд бойового HUD: квест (D927: валюти й кнопки меню тут більше немає — гроші в інвентарі, меню — Esc / Start).
 ## Figma: Game Scene / Combat HUD → Quest Info Panel (434:6580)
 ## та Currency & Settings (434:6586).
 ##
@@ -19,8 +19,6 @@ const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 @onready var _quest_title: Label = %QuestTitle
 ## Куди йти (BACKLOG 28, D-28h): стрілка на мітку цілі в цій кімнаті (Game.objective_marker()).
 @onready var _direction: Label = %Direction
-@onready var _currency_value: Label = %CurrencyValue
-@onready var _menu_button: Button = %MenuButton
 
 var _plaque_tween: Tween = null
 ## Локація поточної кімнати (D717): плашка — лише коли вона змінилась.
@@ -31,12 +29,7 @@ var _plaque_pending: bool = false
 
 func _ready() -> void:
 	add_to_group(&"combat_hud_top")
-	_menu_button.pressed.connect(_on_menu_pressed)
-
-	if not EventBus.coins_changed.is_connected(_on_coins_changed):
-		EventBus.coins_changed.connect(_on_coins_changed)
 	_connect_objective.call_deferred()
-	_refresh_currency()
 
 
 ## Кадр дерева — лише поки HUD у дереві: при зміні сцени (Resume з Game Over, вихід у меню) вузол уже вийнято,
@@ -147,32 +140,3 @@ static func direction_to(marker: Node2D, hero: Node2D) -> String:
 	return ARROWS[Vector2i.DOWN if offset.y > 0.0 else Vector2i.UP]
 
 
-func _on_coins_changed(_amount: int) -> void:
-	_refresh_currency()
-
-
-func _refresh_currency() -> void:
-	var sl: Node = ServiceLocatorHelper.get_service_locator()
-	if sl == null:
-		return
-	var inventory = sl.get_inventory_manager()
-	if inventory == null:
-		return
-	# CoinCounter рахував монети як предмет "coin" — джерело лишаємо те саме.
-	_currency_value.text = _thousands(inventory.get_item_count("coin"))
-
-
-func _on_menu_pressed() -> void:
-	ServiceLocator.get_menu_manager().toggle_game_menu()
-
-
-func _thousands(value: int) -> String:
-	var digits := str(absi(value))
-	var out := ""
-	var count := 0
-	for i in range(digits.length() - 1, -1, -1):
-		out = digits[i] + out
-		count += 1
-		if count % 3 == 0 and i > 0:
-			out = "," + out
-	return ("-" if value < 0 else "") + out

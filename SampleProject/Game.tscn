@@ -157,14 +157,13 @@ script = ExtResource("hit_area_debug")
 
 [node name="Minimap" parent="UI" instance=ExtResource("3_a3gfy")]
 unique_name_in_owner = true
-visible = false
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -152.0
+offset_left = -224.0
 offset_top = 8.0
 offset_right = -8.0
-offset_bottom = 104.0
+offset_bottom = 152.0
 grow_horizontal = 0
 display_player_location = true
 
