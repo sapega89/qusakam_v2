@@ -394,6 +394,10 @@ lane himself. Size/shape fixes are not here: they are scaling in the cloud (P10,
   sheet; the djinn rises from the fire (`LabCells.gd:134` still plays `collapse` + fade-in).
 - **Effects polish (A9)** if his notes need new cards (entry below).
 
+### Moved out of MASTER_PLAN 2026-10-30
+- **M10 — плейтест карти й петель** (👤 Sapega): після M7a, M8; старий план [[archive/MASTER_PLAN_2026-10-27]].
+- **X1 — збірка Windows після змін**: тепер правило нового плану (exe після кожних 2–3 частин).
+
 ### Moved out of MASTER_PLAN 2026-10-27 (waiting on Sapega or deferred)
 Sapega: «те, що не закрито, винесемо з плану». The old plan: [[archive/MASTER_PLAN_2026-10-24]].
 - **Effects polish (A9, item 30)** — waits on his notes; `fx-film` films every effect (GIFs + sheets in
