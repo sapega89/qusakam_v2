@@ -246,6 +246,13 @@ func _hall() -> void:
 	ck(started == ["City_MayorHall", "MayorHall_WallBurst"], "the D300 beats keep their talks (%s)" % [started])
 	ck(get_nodes_in_group(&"boss").size() == 1 and get_first_node_in_group(&"boss") == warrior, "one boss in the fight: the axe-warrior (D557)")
 
+	# B245: у справжньому бою зали бос стоїть на підлозі й б'є — за 6 с хоч один удар по героєві поруч
+	var hits_before := hurt.size()
+	var grounded := true
+	for k in 12:
+		await create_timer(0.5).timeout
+		grounded = grounded and warrior.is_on_floor()
+	ck(grounded and hurt.size() > hits_before, "B245: in the real fight the boss stays on the floor and hits (%d hits in 6 s)" % (hurt.size() - hits_before))
 	print("[4] Win: the scorpion hauls him off, the victory talk, the Laboratory")
 	warrior.take_damage(warrior.current_health + 1000)
 	var hits_at_win := hurt.size()
