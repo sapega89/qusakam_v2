@@ -792,7 +792,10 @@ func stagger(duration: float, from_x: float) -> void:
 	_break_action()
 	state = State.STAGGER
 	_state_left = duration
-	_play(&"Hurt")
+	# B255: поза Hurt — на весь збій, а не 0.25 с і застиглий кадр
+	var hurt: Animation = player.get_node(^"AnimationPlayer").get_animation(player.body_animation(&"Hurt"))
+	player.animation = &"Hurt"
+	player.play_body(&"Hurt", hurt.length / duration)
 	var away: float = signf(player.global_position.x - from_x)
 	player.mover.push(away * stagger_push, stagger_push_time)
 	EventBus.player_staggered.emit(duration)

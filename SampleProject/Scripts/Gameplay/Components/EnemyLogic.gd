@@ -1188,6 +1188,9 @@ func token_free() -> bool:
 	_attackers = _attackers.filter(func(l: EnemyLogic) -> bool: return is_instance_valid(l) and l.is_attacking)
 	if self in _attackers:
 		return true
+	# B255: героя щойно збили — новий замах чекає, поки він стане на ноги (не добивати в збої по черзі)
+	if player != null and player.combat.state == PlayerCombat.State.STAGGER:
+		return false
 	if _attackers.size() >= max_attackers():
 		return false
 	# Підказка іншого вже горить — новий замах чекає її удару (D775: удари групи читаються по одному, а не падають разом)

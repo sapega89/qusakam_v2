@@ -343,5 +343,14 @@ func _block_then_strike_and_roll() -> void:
 		blocked_in_roll = blocked_in_roll or hero.combat.state == hero.combat.State.BLOCK
 		await physics_frame
 	_press(&"block", false)
+	# B255: героя збили — новий замах ворога чекає, поки він стане на ноги (не stunlock по черзі)
+	await create_timer(0.6).timeout
+	var foe: Node = await _spawn(BANDIT, 120.0)
+	foe.enemy_logic.player = hero
+	hero.combat.stagger(0.6, foe.global_position.x)
+	var waits: bool = not foe.enemy_logic.token_free()
+	for i in 45: await physics_frame
+	ck(waits and foe.enemy_logic.token_free(), "B255: no new swing while the hero is staggered, free again after (%s → %s)" % [not waits, foe.enemy_logic.token_free()])
+	foe.queue_free()
 	ck(not blocked_in_roll and absf(hero.global_position.x - x0) > 120.0,
 			"block pressed in the roll: no block until it ends, the roll goes its length (%.0f px)" % absf(hero.global_position.x - x0))
