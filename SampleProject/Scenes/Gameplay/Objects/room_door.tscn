@@ -19,3 +19,9 @@ prompt_offset = Vector2(0, -88)
 action_text = "Enter"
 
 [node name="ExitLight" parent="." instance=ExtResource("3_light")]
+
+[node name="Seal" type="Sprite2D" parent="."]
+visible = false
+z_index = 1
+texture_filter = 1
+centered = false

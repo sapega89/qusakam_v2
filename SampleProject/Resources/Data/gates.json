@@ -1,5 +1,5 @@
 {
-	"_comment": "D562: what opens a locked way inside a location. Each gate is a LockedDoor (Objects/LockedDoor.tscn, gate_id = the key here) and opens with exactly one of: \"key\" — an item from the inventory (consumed when \"consumes_key\"), the opened gate stays open (room_state opened_<node name>, in the save); \"flag\" — a quest flag an NPC talk sets, the gate is open while the flag holds (quest flags are in the save). \"locked_dialogue\" — the hero's line when he tries a closed gate (dialogue_quest/<id>.dqd, a KUSAKAM monologue in a bubble). A gate can also stand on a RoomDoor (gate_id), a door off the main road that bars would block: a flag gate (D643) or a key gate (D723: opened for good like a LockedDoor, and open in a save that has already been behind it). Checked by verify_gates.gd and verify_rooms_batch1.gd.",
+	"_comment": "D562: what opens a locked way inside a location. Each gate is a LockedDoor (Objects/LockedDoor.tscn, gate_id = the key here) and opens with exactly one of: \"key\" — an item from the inventory (consumed when \"consumes_key\"), the opened gate stays open (room_state opened_<node name>, in the save); \"flag\" — a quest flag an NPC talk sets, the gate is open while the flag holds (quest flags are in the save). \"locked_dialogue\" — the hero's line when he tries a closed gate (dialogue_quest/<id>.dqd, a KUSAKAM monologue in a bubble). A gate can also stand on a RoomDoor (gate_id), a door off the main road that bars would block: a flag gate (D643) or a key gate (D723: opened for good like a LockedDoor, and open in a save that has already been behind it). Checked by verify_gates.gd and verify_rooms_batch1.gd. \"art\" (D793, B226) — on a RoomDoor gate: the gate drawn over the door while it is closed (a = carved slab, d = round seal, c = camp stockade).",
 	"gates": {
 		"tower_stash": {
 			"key": "bandit_key",
@@ -23,50 +23,61 @@
 		"camp_door": {
 			"key": "bandit_camp_key",
 			"consumes_key": true,
-			"locked_dialogue": "Gate_CampDoor_Locked"
+			"locked_dialogue": "Gate_CampDoor_Locked",
+			"art": "res://SampleProject/Assets/Backgrounds/BanditCamp/gen_gate.png"
 		},
 		"camp_shortcut": {
 			"flag": "bandit_camp_shortcut",
-			"locked_dialogue": "Gate_CampShortcut_Locked"
+			"locked_dialogue": "Gate_CampShortcut_Locked",
+			"art": "res://SampleProject/Assets/Backgrounds/BanditCamp/gen_gate.png"
 		},
 		"gatehouse_cellar": {
 			"flag": "gatehouse_cellar_allowed",
-			"locked_dialogue": "Gate_GatehouseCellar_Locked"
+			"locked_dialogue": "Gate_GatehouseCellar_Locked",
+			"art": "res://SampleProject/Assets/Backgrounds/Gates/gate_slab.png"
 		},
 		"lizard_caves_shortcut": {
 			"flag": "lizard_caves_shortcut_open",
-			"locked_dialogue": "Gate_LizardCavesShortcut_Locked"
+			"locked_dialogue": "Gate_LizardCavesShortcut_Locked",
+			"art": "res://SampleProject/Assets/Backgrounds/Gates/gate_seal.png"
 		},
 		"ruins_well": {
 			"key": "leader_key",
 			"consumes_key": true,
-			"locked_dialogue": "Gate_RuinsWell_Locked"
+			"locked_dialogue": "Gate_RuinsWell_Locked",
+			"art": "res://SampleProject/Assets/Backgrounds/Gates/gate_seal.png"
 		},
 		"aqueduct_cellar": {
 			"flag": "aqueduct_cellar_open",
-			"locked_dialogue": "Gate_AqueductCellar_Locked"
+			"locked_dialogue": "Gate_AqueductCellar_Locked",
+			"art": "res://SampleProject/Assets/Backgrounds/Gates/gate_slab.png"
 		},
 		"cistern_cellar": {
 			"flag": "cistern_cellar_open",
-			"locked_dialogue": "Gate_CisternCellar_Locked"
+			"locked_dialogue": "Gate_CisternCellar_Locked",
+			"art": "res://SampleProject/Assets/Backgrounds/Gates/gate_slab.png"
 		},
 		"city_rooftops": {
 			"flag": "city_rooftops_slide",
-			"locked_dialogue": "Gate_CityRooftops_Locked"
+			"locked_dialogue": "Gate_CityRooftops_Locked",
+			"art": "res://SampleProject/Assets/Backgrounds/Gates/gate_slab.png"
 		},
 		"mayor_archive": {
 			"key": "mayor_key",
 			"consumes_key": true,
-			"locked_dialogue": "Gate_MayorArchive_Locked"
+			"locked_dialogue": "Gate_MayorArchive_Locked",
+			"art": "res://SampleProject/Assets/Backgrounds/Gates/gate_slab.png"
 		},
 		"alchemist_store": {
 			"key": "alchemist_key",
 			"consumes_key": true,
-			"locked_dialogue": "Gate_AlchemistStore_Locked"
+			"locked_dialogue": "Gate_AlchemistStore_Locked",
+			"art": "res://SampleProject/Assets/Backgrounds/Gates/gate_slab.png"
 		},
 		"malik_stash": {
 			"flag": "lab_acquaintance_complete",
-			"locked_dialogue": "Gate_MalikStash_Locked"
+			"locked_dialogue": "Gate_MalikStash_Locked",
+			"art": "res://SampleProject/Assets/Backgrounds/Gates/gate_slab.png"
 		}
 	}
 }

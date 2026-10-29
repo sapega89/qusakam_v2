@@ -349,14 +349,6 @@ the history, this note keeps only what is open.
 - **Severity:** visual
 - **Found:** 2026-10-29, плейтест Sapega
 
-### B226 — замкнений прохід не видно: «тут був замок, але нічого не видно, що закривало»
-- **Where:** `Maps/LizardCave.tscn` → `Gate_Shrine` (`gate_id = "lizard_shrine"`, pos (1240, 416); Sprite `LizardCave/gen_gate.png` ×0.693, offset (0, −96)); намальована арка проходу — в `Back` (паралакс). Те саме, ймовірно, в кімнатах, де замок — це `room_door` з `gate_id` без жодного спрайта: `ZahraRest` (`WellDoor`, `CampGateDoor`), `Dunes` (`CampDoor`), `Aqueduct` (`CellarDoor`), `Cistern`, `GatehouseCellar`, `LizardCaves` (shortcut)
-- **Expected:** якщо прохід замкнений, гравець бачить, що його закриває (ґрати, двері, завал), і після відмикання воно зникає/відчиняється
-- **Got:** Sapega 29.10 (скрін арки LizardCave): замок був, але на екрані відкрита арка, нічого її не закриває; «і так далі» — так і в інших місцях. Перевірити в грі: чи спрайт `Gate_Shrine` видно до відмикання і чи він стоїть в арці, а не поруч (арка в шарі паралаксу, ворота — ні); для `room_door` з `gate_id` додати видиму перешкоду з наявних текстур (`LockedDoor.tscn`, `palisade_gate`, `Lab/gen_gates`) — без генерації.
-- **Evidence:** скрін у чаті 2026-10-29
-- **Severity:** blocker (гравець не розуміє, чому не пройти)
-- **Found:** 2026-10-29, плейтест Sapega
-
 ### B227 — карта Каньйону Шепотів не відкривається, «Досліджено −9223372036854775808%»
 - **Where:** `Scripts/Systems/LocationMap.gd` → `_init()` (клітинки локації через `MetSys.map_data.get_cells_assigned_to(_room_path(room))`) і `explored_percent()` (`roundi(100.0 * explored / cells.size())`); картка — `Scripts/Menus/Game/metsys_map_component.gd:207`
 - **Expected:** картка показує 0–100%, рівень 2 (карта локації) відкривається

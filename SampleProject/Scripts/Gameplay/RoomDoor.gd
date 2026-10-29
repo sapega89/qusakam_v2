@@ -31,6 +31,10 @@ const LockedDoor := preload("res://SampleProject/Scripts/Gameplay/LockedDoor.gd"
 
 @onready var interactable: InteractableComponent = $Interactable
 @onready var exit_light: Sprite2D = $ExitLight
+## Брама поверх зачинених дверей (D793, B226): арт із gates.json "art", низом на підлогу (низ тіла дверей), висотою
+## SEAL_HEIGHT; зникає, щойно двері відчинено (ключ, прапорець).
+@onready var seal: Sprite2D = $Seal
+const SEAL_HEIGHT := 168.0
 
 var _gate: Dictionary = {}
 
@@ -40,6 +44,9 @@ func _ready() -> void:
 		var gates: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(GATES_PATH)).gates
 		assert(gates.has(gate_id), "RoomDoor: no gate '%s' in gates.json (%s)" % [gate_id, get_path()])
 		_gate = gates[gate_id]
+		if _gate.has("art"):
+			_fit_seal(load(_gate.art))
+			Game.get_singleton().quest_flag_changed.connect(func(_id: String, _value: Variant) -> void: _show_seal())
 	if not cover.is_empty():
 		var wall: Node = get_node(cover)
 		if not wall.was_broken():
@@ -78,11 +85,25 @@ func _on_interacted() -> void:
 			inventory.remove_item(_gate.key, 1)
 		Game.get_singleton().set_room_state(_room(), "opened_%s" % name, true)
 		AudioManager.play(&"door")
+		_show_seal()
 	interactable.enabled = false
 	if sets_flag != "":
 		Game.get_singleton().set_quest_flag(sets_flag, true)
 	# Стару кімнату (разом із цими дверима) звільняє сам teleport_to_room — не посеред обробки вводу.
 	Game.get_singleton().teleport_to_room.call_deferred(target_room, arrival)
+
+
+func _fit_seal(texture: Texture2D) -> void:
+	seal.texture = texture
+	var scale_factor := SEAL_HEIGHT / texture.get_height()
+	seal.scale = Vector2(scale_factor, scale_factor)
+	var feet: float = ($CollisionShape2D.shape as RectangleShape2D).size.y / 2.0
+	seal.position = Vector2(-texture.get_width() * scale_factor / 2.0, feet - SEAL_HEIGHT)
+	_show_seal()
+
+
+func _show_seal() -> void:
+	seal.visible = seal.texture != null and not is_open()
 
 
 func _room() -> String:
