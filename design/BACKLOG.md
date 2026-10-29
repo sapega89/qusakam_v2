@@ -69,6 +69,14 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 
 ## 📋 Planned — ready to run
 
+
+### Темп боїв — D935 (+ D925, D932, B237)
+Сейв перед кожною елітою; між боями щонайменше екран тиші; еліта анонсована (поїдає здобич, змінене оточення); вороги стоять на мапі від початку, не з'являються з тригера. Почати з DesertRoad.
+**Resume:** таблиця боїв DesertRoad (x тригера, склад, еліта, відстань до попереднього) → показати Sapega перестановку → `auto_spawn_on_ready` + видимість ворогів у `RoomEnemySpawner`.
+
+### Режим розробника — [[dev_menu_plan]]
+Нічого не зроблено. Є: `add_coins`, `is_invulnerable`, `teleport_to_room`, `LocationDB.all()`. Чекає Q128 (у яких збірках).
+**Resume:** після відповіді на Q128 — slice 1: `UI/Components/dev_menu.tscn` + action `dev_menu` + `verify_dev_menu.gd`.
 ### ✅ DONE 2026-10-20 — Painted terrain in the outdoor rooms — D248, D249
 All six outdoor rooms walk on painted ground (Canyon earlier; Village, DesertRoad, CityGates, City, LaboratoryOutside
 now); the checker tile is gone, CityGates' ceiling included; the Canyon's gorge back wall repainted from the same rock.
@@ -361,11 +369,18 @@ lane himself. Size/shape fixes are not here: they are scaling in the cloud (P10,
   and wired (`wire-leftovers`). Fix-ups left on the drawn ones: the halberd's double-axe head in 5 frames (`HEADS` in
   `halberd_fixups.py`, its README), the mace handle past the fist in 3 frames. Sheet `design/shots/h3_weapon_variants_2.png`
   not yet seen by Sapega.
-- **A15 the bandit in normal proportions** (not chibi, D816); then re-measure its `enemy_variety.json` scale.
+- **A15 the bandit in normal proportions** (not chibi, D816); then re-measure its `enemy_variety.json` scale. Sapega 29.10 підтвердив: «вони як дорослі мають бути перемальовані»; зріст лишається дорослим 1.5 H, міняються лише пропорції (D930: «не буквально більші, але чібі — дивно»).
 - **A4 the alchemist** ([[asset_verdicts_2026-10-27]]).
 - **The merchant as an older, cunning rat-folk** (entry below).
-- **Burnt village**: charred palms, banners, grass (wire-backdrops left them green).
+- **Burnt village**: charred palms, banners, grass (wire-backdrops left them green). Sapega 29.10 у плейтесті: «в нас
+  спалене село і зелена пальма» (`Village.tscn` → `Decor/Palm1–3`, `FrontDark/OccluderPalm1–2`, сцена `decor_palm`).
+  До нового арту можна без генерації: окрема сцена обгорілої пальми з темним `modulate` / знебарвленням листя.
+- **Живий дим і палаюче село** (Sapega 29.10; D796, D918, D919): шейдер руху на `gen_plume`, відсвіт вогню, клуби й
+  іскри біля села; полум'я на хатах — новий арт, пізніше. [[village_smoke_plan]]
 - **City**: craft quarter forge and chapel fronts (M6c).
+- **Еліти: кадри «поїдає здобич»** (D935) для першої зустрічі з кожною елітою.
+- **Шакал: кадри замаху перед стрибком** (D929): присів на задні лапи, голова вниз — 2–3 кадри перед `lunge`; до того — стискання спрайта в сцені.
+- **Собаки й кішки в місті** (D926, [[ambient_critters_plan]]): нові критери-спрайти (idle / walk / втеча), потім розставити в City, CraftQuarter, PalaceSquare, Rooftops.
 - **Laboratory v3**: the djinn hall's cave look at ground level (D865; lab-v3-now had no art), the stairs and the guard's
   alcove still on placeholder planes (`Lab/gen_far`, slab steps).
 - **Art-lane B rows that need new art**: B173 (DragonMural/MesaClimb floor baked into one backdrop), B174 (GatehouseCellar
@@ -578,6 +593,7 @@ Slices 1b, 2 and 8 built the previous defaults and pass their tests. A green
 | D104 | Shop quantity selector | New, undesigned UI |
 | D105 | Greyed rows instead of the gold modal | Remove the modal path |
 | D108 | Blacksmith covers all four stations | Slice 4 scope grows |
+| D924 | **Мікростан:** третій удар серії й важкий удар коротко збивають анімацію ворога (~0.2 / ~0.35 с) і забирають стаміну (−15 / −25); боси — лише стаміна; committed-замах (D576) збиває лише важкий. Скасовує D778 частково. Код: `PlayerCombat` (фінішер / `HEAVY_STRIKE`) → `DefaultEnemy.stagger()` + `EnemyStamina` | `verify_combat_flow` / `verify_combat_feel` перевіряють D778 «без стану з третього удару» — змінити очікування |
 
 ---
 

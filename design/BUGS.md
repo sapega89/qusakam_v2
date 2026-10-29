@@ -244,7 +244,7 @@ the history, this note keeps only what is open.
 > **integrate-32 (2026-10-28):**
 > - **B207** (fixed, `cloud/wire-backdrops-3`: `Critters` after `Terrain`, `Pigeon2` off the slab; `cloud/critter-tweaks`' B-ct1) — City pigeons sunk in the street: `Maps/City.tscn` `Critters/Pigeon1..3` sit at y 384, but the street `Terrain` sprite (top y 360) is drawn after `Critters` and covers the bottom 24 px. The 36 px pigeon showed only its head; the 24 px pigeon (D868) is fully hidden. Fix: pigeons to y 360 (on the street line), or `Critters` after `Terrain`. `verify_ambient_critters` does not catch occlusion.
 > - **B208** (fixed, `feature/backlog` `bd11ee75`: [2e] now checks that D754 holds; tests; `cloud/enemy-sizes`' proposal) — `verify_combat_flow` [2e] «a heavy hit (knockback) breaks the tank's swing» checks nothing: under D754 a swing holds its ground (`holds_ground`), so the push moves nothing; it passed only because the stand-in stood 14.5 px outside its reach (kept, with a comment). Fix: drop the check, or turn it into a check that D754 holds.
-> - **B209** (open; integrate-32, `design/shots/yellow_sky.png` re-shot after the merge) — the painted road rooms keep a blue sky before the Laboratory exit (D864): `cloud/wire-backdrops` (D870) replaced their `Back/Sky` placeholders with painted planes, which `SkyTint.gd`'s `ROOM_SKIES` / the shared sky material do not cover (MountainPath row of the shot: pale blue-grey sky with yellow-sky on). Fix: the painted sky planes take `sky_tint.tres` (or are listed in `SkyTint`), with a `verify_yellow_sky` row per painted room.
+> - **B209** (open; integrate-32, `design/shots/yellow_sky.png` re-shot after the merge) — the painted road rooms keep a blue sky before the Laboratory exit (D864): `cloud/wire-backdrops` (D870) replaced their `Back/Sky` placeholders with painted planes, which `SkyTint.gd`'s `ROOM_SKIES` / the shared sky material do not cover (MountainPath row of the shot: pale blue-grey sky with yellow-sky on). Fix: the painted sky planes take `sky_tint.tres` (or are listed in `SkyTint`), with a `verify_yellow_sky` row per painted room. **Sapega 29.10, playtest:** «небо голубе а має бути жовтим» (the road to the village), still open.
 >
 > **feature/backlog, 2026-10-28 evening (wire-props leftovers):**
 > - **B210** (fixed, `5c2d221a`, D916: CrateL (520.25, 324) + CrateR (560.75, 324) touching over x 500–581, CrateTop (540.5, 285), `design/shots/d916/camp_west.png`; was open, rooms) — BanditCamp: the crate stack falls apart at chart size. The README feet reproduce the places of the old ~2× crates, so the chart-size crates stand apart: `CrateL` x 479–520, `CrateR` 589–629, and `CrateTop` 550–590 at feet 283.5 hangs on the tent. Suggested: two crates touching side by side, one on top 39 px higher, around x 500–580.
@@ -259,6 +259,153 @@ the history, this note keeps only what is open.
 - **Severity:** minor (tooling)
 - **Found:** 2026-10-24, big-scorpion report
 
+### B214 — дуже багато живності по дорозі в село
+- **Where:** кімнати маршруту каньйон → село (D892, `cloud/rooms-finish`): `Maps/Canyon.tscn`, `CanyonFloor`, `MountainPath`, `ScreeSlide`, `StreamGorge`, `RockLedges` → `Critters/*` (+ кажани на `FrontDark` у печерах)
+- **Expected:** живність — тихий фон (D803/D892), не забиває кадр на кожному кроці
+- **Got:** Sapega в плейтесті: «по дорозі в село дуже багато живності». Зараз у `Critters`: Canyon 3, CanyonFloor 2 (+ бій: fast, vulture), MountainPath 3, ScreeSlide 1, StreamGorge 3, RockLedges 1 — критери стоять у кожній кімнаті поспіль. Норма на кімнату ніде не записана. Sapega 29.10: йдеться **лише про декоративних птахів і метеликів** (`Critters/*`), не про ворогів.
+- **Severity:** visual
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B215 — вказівник (камінь зі стрілкою) висить у повітрі на MountainPath
+- **Where:** `Maps/MountainPath.tscn` → `Back/Waymarker/Sprite` (`gen_waymarker.png`, pos (2178, 330.7), ×1.5)
+- **Expected:** камінь стоїть основою на підлозі, як інший пропс кімнати
+- **Got:** основа помітно вище краю підлоги, між каменем і землею видно фон (скрін Sapega 29.10). Ймовірна причина: спрайт лежить у `Parallax2D` з `scroll_scale = (0.9, 0.9)`, тобто він їде відносно підлоги, і що далі камера від точки вирівнювання, то більше він відривається (по Y також). Виправлення: перенести його в шар, прив'язаний до підлоги (scroll 1.0), і поставити низ на рівень підлоги. Те саме перевірити для `gen_waymark.png` у `CaveUnderBridge`.
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** visual
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B216 — на MountainPath немає переднього фону, сцена виглядає неповною
+- **Where:** `Maps/MountainPath.tscn` → `FrontDark` (є лише `OccluderRock1` на x 1594); так само по одному шматку в `ScreeSlide`, `StreamGorge`, `RockLedges`
+- **Expected:** D774: передній фон є в кожній кімнаті, частина його жива; D750: іноді частково закриває огляд, але ніколи не під ногами
+- **Got:** на більшій частині кімнати переднього плану немає взагалі (скрін Sapega 29.10 з каменем-вказівником: між героєм і камерою нічого). Виправлення без нової генерації (ComfyUI зупинено, див. comfyui-stopped): розставити вже наявні текстури `gen_front.png` / оклюдери з сусідніх кімнат маршруту, масштабуючи їх.
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** visual
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B217 — герой ходить по верхньому краю дороги, а не по її середині
+- **Where:** `Maps/MountainPath.tscn` → `Ground/Ground` (`gen_ground.png`, верх на y 383.5, смуга 49 × 1.5 = 73.5 px) і підлога `TileMap/Foreground` (рядок 12 = y 384); той самий набір `Ground` + `GroundUnder` у `ScreeSlide`, `StreamGorge`, `RockLedges`, `MesaTop`, `CaveUnderBridge`
+- **Expected:** дорога намальована в перспективі, тож ноги героя стоять приблизно посередині смуги, а не на дальньому краї (Sapega 29.10: «дорога це наче перспектива тому маю ходити десь по середині»)
+- **Got:** колізія підлоги точно на верхньому краї смуги дороги, тож герой іде по самій кромці, і вся дорога видна під ним (скрін 29.10). Виправлення в сцені, без нового арту: підняти смугу `Ground` (і `GroundUnder` за нею) вгору відносно лінії ходіння приблизно на половину її висоти (~36 px), щоб лінія ходіння йшла через середину; перевірити, що вороги, пікапи і `Arrival` лишаються на підлозі.
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** visual
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B218 — звук удару кулаком треба поміняти
+- **Where:** `Resources/Data/sound_events.json` → `hit` (`SFX/impactPunch_medium_000–002.ogg`), а також `hit_heavy` / `hit_strike` / `hit_riposte` і `cast_*_release` (`impactPunch_heavy_*`)
+- **Expected:** Sapega 29.10: «звук удару кулаком треба поміняти»
+- **Got:** усі влучання героя звучать як удар кулаком (`impactPunch_*`). Що на заміну: у `Assets/Audio/SFX` уже є `impactMetal_light_*`, `impactPlate_light/heavy_*`, `impactBell_heavy_*`. Перед виправленням спитати в Sapega, чи міняти лише голі руки (`grip == &"bare"`), чи всі влучання, і на що саме.
+- **Severity:** cosmetic
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B219 — музика бою вмикається, коли ворогів немає
+- **Where:** `Scripts/Player/Components/PlayerCombat.gd` → `_track_combat()`; музику вмикає `Scripts/Systems/SoundHooks.gd` → `_on_combat_state_changed()` / `_update_music()` (D414)
+- **Expected:** Sapega 29.10: «не запускати музику бою якщо немає ворогів»
+- **Got:** бій (`combat_state_changed(true)`) починається, щойно стан героя не `READY` / `BLOCK` / `DRINK`, тобто від будь-якого замаху в порожній кімнаті, і тримається `COMBAT_LINGER`; від цього грає трек `fight`. Перевірка `_enemy_engaged()` іде через `or`, а не як умова. Виправлення: бій лише тоді, коли поруч є живий ворог (`_enemy_engaged()` або живий ворог у групі `ENEMIES` на екрані); `verify_music` доповнити випадком «замах без ворогів → музика кімнати». Не зламати D268: витягування зброї в бою.
+- **Severity:** visual
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B220 — дивна смуга на дорозі в StreamGorge
+- **Where:** `Assets/Backgrounds/StreamGorge/gen_ground.png` (`bd59b5f2`), у сцені `Maps/StreamGorge.tscn` → `Ground/Ground` (y 343, ×1.5)
+- **Expected:** берег струмка переходить у дорогу без лінії, як в інших `gen_ground.png` дороги
+- **Got:** у самій текстурі на всю ширину йде рядок 27 кремового кольору (≈ #FDD8A3) і рядок 28 темно-фіолетовий (≈ #3B1646), прямо над помаранчевою дорогою; у грі це світла смуга з тінню вздовж усієї кімнати (скрін 29.10). Інших `gen_ground.png` це не стосується (перевірено скриптом). Виправлення без генерації: зафарбувати рядки 27–28 кольорами сусідніх рядків (води 26 / дороги 29).
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** visual
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B221 — будинки в селі стоять нижче дороги
+- **Where:** `Maps/Village.tscn` → `ElderHouse` (`gen_elder_house_burnt.png`, pos (1890, 150), ×1.5) і `GrandpaHouse` (`gen_grandpa_house_burnt.png`, (1398, 154))
+- **Expected:** будинок стоїть на дорозі: низ стін і поріг дверей на лінії ходіння (підлога y 384)
+- **Got:** низ арту `ElderHouse` на y 436.5 (на 52 px нижче підлоги), `GrandpaHouse` на y 425.5 (на 41 px); двері й стіни заходять під дорогу (скрін Sapega 29.10: «будівля знаходиться нижче дороги, це не красиво»). Виправлення в сцені: підняти обидва спрайти так, щоб поріг дверей був на y 384 (точний зсув — з порога на арті, не з низу картинки); `ElderDoor` (2163, 344) звірити з дверима на арті.
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** visual
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B222 — вікна будинку старійшини зовні й усередині не збігаються
+- **Where:** зовні `Maps/Village.tscn` → `ElderHouse` (`gen_elder_house_burnt.png`); усередині `Maps/ElderHouse.tscn` (ціль `ElderDoor`)
+- **Expected:** той самий будинок: стільки ж вікон і того ж виду зовні й усередині
+- **Got:** Sapega 29.10: «в цій будівлі одне вікно і воно розпахнуте, а з середини два вікна і вони одинарні». Виправлення без генерації: або в інтер'єрі лишити одне вікно (сховати/закрити друге) і дати йому розчинені віконниці, або зовні показати друге вікно; що саме — вибрати з наявних текстур кімнати, не малювати нове.
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** visual
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B223 — колаж інтер'єру будинку старійшини треба підправити
+- **Where:** `Maps/ElderHouse.tscn`: `Wall` (`ElderHouse/gen_wall.png`), `Floor`, пропси `Amphora` / `PotBig` / `PotSmall`, горище `Attic/*` (`GrandfatherAttic/gen_wall`, `gen_floor`, `Dark` тайли, `HatchTop`), `Attic/Ladder_Attic`
+- **Expected:** кімната читається як одна намальована сцена, без видимих швів між шматками
+- **Got:** Sapega 29.10: «колаж треба підправити» (скрін інтер'єру). Що видно на скріні: (1) чорний прямокутник у стелі навколо драбини (x ≈ 1000–1150, від верху до ~130 px) — діра під люк із тайлів `Attic/Dark`; (2) різкий горизонтальний шов між смугою підлоги горища та стіною (y ≈ 130); (3) глечики й миски вставлені поверх кам'яної лави з іншим освітленням і без тіні, частина висить над краєм; (4) кам'яні блоки лави обриваються під драбиною. **Sapega 29.10 уточнив (скрін люка): «прибрати цей квадрат на фоні і драбину на фоні».** Отже, робота: (а) прибрати темний квадрат навколо драбини в отворі стелі — найімовірніше, `Attic/Dark` (тайли з `modulate` (0.13, 0.1, 0.12)) просвічує крізь діру у `Attic/Wall` / `FloorArt`; закрити діру або прибрати тайли під нею; (б) прибрати намальовану драбину позаду справжньої — `Attic/HatchTop` (`GrandfatherAttic/gen_hatch.png`, 22×60, pos (466.5, 388)). Справжня драбина `Attic/Ladder_Attic` і замкнений люк `Hatch_Attic` лишаються (no-ladders: існуючі драбини не чіпати без питання). Пункти (2)–(4) вище — не названі, не чіпати.
+
+### B224 — на горищі зайва лінія, і герой бігає по верхньому краю підлоги
+- **Where:** `Maps/ElderHouse.tscn` → `Attic/FloorArt` (`GrandfatherAttic/gen_floor.png`, 576×64, pos (0, 448), ×1.5), `Attic/Wall` (`gen_wall.png`, (0, 32.5) — на ньому намальований перспективний настил), підлога горища `Attic/Floor` (тайли, прихований) і `Attic/Ledge_Hatch` (480, 454)
+- **Expected:** ноги героя посередині намальованого настилу, а не на передній кромці балки (та сама вимога, що B217: «дорога — перспектива, ходити посередині»); на підлозі немає світлої смуги
+- **Got:** скрін Sapega 29.10 «і лінія зайва, і бігаю я по верхньому краю». (1) Рядок 0 `gen_floor.png` світлий (≈ #BE766D) на всю ширину — над темнішими рядками 1–14 він читається як окрема лінія; (2) лінія ходіння = верх `FloorArt` (y 448), тобто герой іде по кромці передньої балки, а весь настил, намальований на `Attic/Wall`, лишається позаду нього. Виправлення в сцені, без генерації: зафарбувати рядок 0 кольором рядка 1; опустити `Attic/Wall` + `FloorArt` + пропси горища (`Clutter`, `Shrine`, скриня, нотатки, пікап) так, щоб лінія ходіння йшла через середину настилу, або підняти колізію підлоги. Перевірити драбину (`Ladder_Attic` height 416), люк і `Ledge_Hatch` після зсуву.
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** visual
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B225 — статуї ящерів у нішах висять у повітрі (LizardCave)
+- **Where:** `Maps/LizardCave.tscn` → `Back/Shrines/ShrineA1–A2` (`gen_shrine_a.png`, y 186, ×1.5) і `ShrineB0–B2` (`gen_shrine_b.png`, y 159, ×1.5); `Gate_Shrine` стоїть на y 416 — це підлога
+- **Expected:** постаменти ніш стоять на підлозі печери
+- **Got:** скрін Sapega 29.10 «крокодили висять в повітрі»: низ `gen_shrine_b` на y 393 (на 23 px вище підлоги), `gen_shrine_a` на y 406.5 (на 9.5 px вище); під постаментом і килимом видно підлогу з тінню. Виправлення в сцені: опустити спрайти так, щоб низ постаменту був на y 416 (`ShrineB*` +23, `ShrineA*` +9.5); шар `Shrines` по Y не паралаксить (`scroll_scale.y = 1`), тож зсув тримається на всій кімнаті.
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** visual
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B226 — замкнений прохід не видно: «тут був замок, але нічого не видно, що закривало»
+- **Where:** `Maps/LizardCave.tscn` → `Gate_Shrine` (`gate_id = "lizard_shrine"`, pos (1240, 416); Sprite `LizardCave/gen_gate.png` ×0.693, offset (0, −96)); намальована арка проходу — в `Back` (паралакс). Те саме, ймовірно, в кімнатах, де замок — це `room_door` з `gate_id` без жодного спрайта: `ZahraRest` (`WellDoor`, `CampGateDoor`), `Dunes` (`CampDoor`), `Aqueduct` (`CellarDoor`), `Cistern`, `GatehouseCellar`, `LizardCaves` (shortcut)
+- **Expected:** якщо прохід замкнений, гравець бачить, що його закриває (ґрати, двері, завал), і після відмикання воно зникає/відчиняється
+- **Got:** Sapega 29.10 (скрін арки LizardCave): замок був, але на екрані відкрита арка, нічого її не закриває; «і так далі» — так і в інших місцях. Перевірити в грі: чи спрайт `Gate_Shrine` видно до відмикання і чи він стоїть в арці, а не поруч (арка в шарі паралаксу, ворота — ні); для `room_door` з `gate_id` додати видиму перешкоду з наявних текстур (`LockedDoor.tscn`, `palisade_gate`, `Lab/gen_gates`) — без генерації.
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** blocker (гравець не розуміє, чому не пройти)
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B227 — карта Каньйону Шепотів не відкривається, «Досліджено −9223372036854775808%»
+- **Where:** `Scripts/Systems/LocationMap.gd` → `_init()` (клітинки локації через `MetSys.map_data.get_cells_assigned_to(_room_path(room))`) і `explored_percent()` (`roundi(100.0 * explored / cells.size())`); картка — `Scripts/Menus/Game/metsys_map_component.gd:207`
+- **Expected:** картка показує 0–100%, рівень 2 (карта локації) відкривається
+- **Got:** скріни Sapega 29.10: «Досліджено −9223372036854775808% · Скрині 2/7 · Секрети 2/7» і «не можу подивитись карту каньйону». −9223372036854775808 = `INT64_MIN`, тобто `roundi(NaN)` від 0/0: у `LocationMap("canyon_of_whispers")` **`cells` порожній** — жодна з 25 кімнат `locations.json` не знайшла своїх клітинок, тому й карта рівня 2 порожня. `MapData.txt` зберігає кімнати за UID (`:d2qxq8pgs28p4`, 0 шляхів `.tscn`), а `get_cells_assigned_to()` переводить шлях у UID через `ResourceLoader.get_resource_uid(path)`; гіпотеза (не перевірено): у зібраному exe цей виклик для `…/Maps/<room>.tscn` повертає `INVALID_ID` (ремап `.tscn` при експорті), і всі кімнати губляться. Перевірити спершу в редакторі, потім в exe; інші локації — так само. Виправлення в корені (no-fallbacks): знайти, де губиться UID; плюс `assert(not cells.is_empty())` у `LocationMap._init()`, щоб це падало голосно, а не показувало NaN.
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** blocker
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B228 — дві темні колони перед фрескою дракона виглядають як промежина коня (DragonMural)
+- **Where:** `Maps/DragonMural.tscn` → `Back/Frame` (`DragonMural/gen_frame.png`) — дві похилі темні колони, що сходяться вгорі над світлим просвітом посередині кадру; фреска — `Back/Dragon` (`gen_dragon.png`)
+- **Expected:** рамка обрамлює фреску й читається як скеля/колони печери, без двозначного силуету
+- **Got:** Sapega 29.10 (скрін): «це виглядає як промежина коня» — дві колони, що звужуються догори й сходяться темною перемичкою, зі світлою «щілиною» між ними, складаються в силует ніг і паху. Виправлення без генерації: розсунути колони (розрізати `gen_frame.png` на ліву й праву частини й рознести), прибрати або закрити перемичку вгорі (`TopShade`, корені `FrontDark/Roots*`), щоб вони не сходились у V; або залишити одну колону. Перевірити на скріні в грі.
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** visual
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B229 — схованка контрабандистів порожня: «кімната, в якій нічого немає»
+- **Where:** `Maps/SmugglersStash.tscn` (згенерована `build_world_rooms.py`, `wire-backdrops-2`): є лише намальовані `Goods` (ящики, мішки, глечики — арт, не предмети), `SecretArea_Stash` (640, 336), `ExitDoor`, кажан, порошинки
+- **Expected:** схованка, яку рахують як секрет, щось дає: скриню / пікап / записку
+- **Got:** Sapega 29.10 (скрін): «кімната, в якій нічого немає» — жодного `Chest` / `ItemPickup` / нотатки; гравець знаходить секрет і йде з порожніми руками. Що має бути всередині — ніде не записано (ні в `world_structure_plan`, ні в D-ID) → спитати Sapega; так само перевірити `MalikStash`, `CisternStash` (теж без скринь і пікапів).
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** blocker (порожня нагорода за секрет)
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B230 — у схованці контрабандистів Кусакам бігає по повітрю
+- **Where:** `Maps/SmugglersStash.tscn` → підлога `TileMap/Foreground` (колізія) проти намальованої підлоги в `Ground/Far`
+- **Expected:** ноги на намальованій підлозі (піщана долівка)
+- **Got:** Sapega 29.10 (той самий скрін): герой праворуч стоїть на висоті фіолетових каменів, вище піску долівки, тобто колізія підлоги не збігається з лінією підлоги на арті. Виправлення в сцені: виміряти лінію долівки на `Far` і зсунути арт (або колізію) так, щоб вони збіглися; з ним — `Goods`, `Arrival`, `ExitDoor`.
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** visual
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B231 — при переході між кімнатами герой з'являється вгорі й падає
+- **Where:** `Scripts/Gameplay/FadeRoomTransitions.gd` → `_on_room_changed()` (перехід краєм екрана: `_player.position -= offset` + `EDGE_NUDGE`); для дверей і телепорту вже є `Game._place_on_floor()` (B153, `ARRIVAL_DROP` 128)
+- **Expected:** після переходу герой одразу стоїть на підлозі нової кімнати, ще під чорним екраном (як після дверей, B153)
+- **Got:** Sapega 29.10: «при переході я спавнюсь і падаю зверху». При переході краєм герой зберігає Y зі старої кімнати; підлоги кімнат дороги на різній висоті (напр. MountainPath колізія y 384, у StreamGorge смуга дороги з y 343, LizardCave — 416), тож у кімнаті з нижчою підлогою він з'являється в повітрі й падає вже після появи. Виправлення в корені: після зсуву в `FadeRoomTransitions` ставити героя на підлогу тим самим `_place_on_floor()` (лише при горизонтальному переході; при вертикальному — падіння через отвір у підлозі є задумом, no-ladders); або вирівняти висоти підлоги на межах сусідніх кімнат. В якій саме парі кімнат — уточнити в Sapega, перевірити `verify_room_entrances`.
+- **Severity:** visual
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B232 — після ривка коротка «мертва» мить: натискання не спрацьовують
+- **Where:** `Scripts/Player.gd:274` — удар і важкий удар приймаються лише `and not mover.is_rolling()`; `PlayerMover.gd` (`roll_duration` 0.30, `roll_cooldown` 0.6, `can_roll()` / `dash_chain_after`); буфер уже є — `PlayerCombat.INPUT_BUFFER` 0.2 (`_buffered` / `_buffer_left`)
+- **Expected:** Sapega 29.10: «після ривка якась мікросекунда, що я не можу нічого нажимать — бій треба зробити плавнішим»; натиснуте наприкінці ривка виконується одразу після нього (D504, Tails of Iron / Salt and Sanctuary — чесний, але чуйний бій)
+- **Got:** удар, натиснутий під час ривка, просто губиться (не йде в буфер), тож гравець тисне в останні кадри ривка — і нічого; виглядає як завмирання після ривка. Виправлення: натискання удару/важкого/вміння під час ривка класти в наявний буфер `PlayerCombat` (0.2 с) і виконувати в перший кадр після `is_rolling() == false`; перевірити, чи `roll_cooldown` 0.6 не блокує повторний ривок довше, ніж видно гравцю. Тест у `verify_combat_feel`: удар, натиснутий за ≤0.2 с до кінця ривка, виходить у перший кадр після нього.
+- **Severity:** visual (відчуття бою)
+- **Found:** 2026-10-29, плейтест Sapega
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** visual
+- **Found:** 2026-10-29, плейтест Sapega
+
 
 ### O<n> — <what you noticed>
 - **Where:** <screen / node>
@@ -268,6 +415,7 @@ the history, this note keeps only what is open.
 ```
 
 ### O16 — Minimap is hidden at game start and overlaps the HUD once shown
+**Sapega 29.10 → D927:** прибрати золото й кнопку меню з HUD, мінімапу збільшити — перекриття зникне разом з іконками.
 In `shots`-style runs (`capture_tutorial_shots.gd`, 2026-10-12) the minimap is not on
 screen after boot; it appears only after the full map (M) is opened and closed, because
 the map script sets `minimap.visible = not visible`. When it shows, it sits under the
@@ -383,3 +531,63 @@ All measured, none with a source that makes them wrong:
 - **Pre-existing test failures** → [[test_baseline]].
 - **Figma frames the designer must update** → [[UI_IMPLEMENTATION_STATUS]].
   A stale frame is the designer's task, not a code bug.
+
+### B233 — блок, натиснутий в останній момент, не встигає
+- **Where:** `Scripts/Player/Components/PlayerCombat.gd`: блок стартує лише в `_physics_process` зі стану `READY` (`_start_block()`), посеред удару — лише коли `can_cancel_attack()` (`SWING` після `_hit_out`, `HEAVY_RECOVERY`); під час ривка, `DRINK`, касту, збою блок не піднімається взагалі; `block_held` ставить `Player.gd:264`. Влучання ворога перевіряє `guard_against()` — `state != State.BLOCK` → не захищено
+- **Expected:** Sapega 29.10: «блок, якщо я в останній момент натискаю, то він міг встигнути заблокувати удар» — натиснутий до влучання блок захищає (D504: чуйний бій)
+- **Got:** (1) натискання за кадр до влучання може програти: `block_held` ставиться в `_input`, а `BLOCK` — лише в наступному `_physics_process` героя; якщо удар ворога рахується раніше в тому ж кадрі, він проходить; (2) натиснутий під час свого удару (до `_hit_out`), ривка чи `DRINK` блок не піднімається, доки дія не скінчиться, і запізнюється. Виправлення: піднімати блок у тому ж кадрі, коли натиснуто (з `READY`), плюс невелике вікно «пізнього блоку» (~0.1 с: удар, що влучив за ≤0.1 с до підняття, рахується заблокованим, не парируванням); з удару — дозволити скасування в блок раніше (до хітбокса, Tails of Iron), з ривка — у буфер (як B232). Числа — підібрати в грі. Тест у `verify_combat_feel`: блок за 1 кадр до влучання — заблоковано.
+- **Severity:** visual (відчуття бою)
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B234 — ривком (Shift) не проскочити крізь скорпіона
+- **Where:** `Scripts/Player/Components/PlayerMover.gd` → `start_roll()` / `_pass_through_enemies()` / `_release_passed()` (D443: перекат проходить крізь ворога); ривок `roll_distance` 170 px за `roll_duration` 0.30 с; скорпіони — `enemy_tank.tscn` (тіло хурт 74×52), `enemy_armoured_scorpion.tscn` (тіло 64×32, хурт 127×92), розміри `enemy_variety.json` → `tank.sizes` (medium ×2), елітні ×1.5 (D859)
+- **Expected:** Sapega 29.10: «я не можу шифтанутись через скорпіона» — ривок проносить героя крізь будь-якого звичайного ворога на інший бік (D443)
+- **Got:** крізь скорпіона не проходить. Гіпотеза (не перевірено в грі): великий / елітний скорпіон ширший, ніж 170 px ривка разом із тілом героя, тож ривок закінчується всередині, виняток колізії тримається (`_release_passed`), а потім фізика виштовхує героя назад; друга можлива причина — у скорпіона є ще одне тіло-колізія, не той вузол, що в групі `ENEMIES`, і виняток на нього не ставиться. Виправлення: виміряти в `verify_combat_feel` ривок крізь кожен розмір скорпіона; якщо ривок коротший за ворога — доводити ривок до виходу з тіла (ривок триває, доки герой усередині ворога, з межею) замість збільшувати всім `roll_distance`.
+- **Severity:** visual (відчуття бою)
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B235 — складні бої починаються дуже різко
+- **Where:** баланс маршруту: `verify_difficulty.gd` (D668), зсуви рівнів D857 / D911 (еліта +1, бос +2, Laboratory і Bandit Camp +1), числа `enemy_variety.json`; перші важкі вороги на маршруті — броньований скорпіон L3, старий гриф L4 (D911: симуляція програє їм, прийнято)
+- **Expected:** Sapega 29.10: «дуже різко починаються складні бої» — крива складності росте поступово: перед першим важким ворогом гравець уже бачив простіші версії його прийомів
+- **Got:** перехід від легких боїв до важких — стрибком. D911 прийняв програші симуляції елітам «як є», а цей плейтест каже, що на ділі стрибок завеликий. Що зробити: знайти в `verify_difficulty` перший бій, де «час до перемоги» / втрачене HP стрибає найбільше, і згладити (раніше на маршруті — проміжний бій із тим самим ворогом без еліти, або на 1 рівень нижче; або перший елітний бій пізніше). Це рішення про баланс, тож конкретні числа — показати Sapega таблицею до зміни. **Sapega 29.10:** «тут я програю двом собакам … постійно їх дві … у каньйоні дві собаки — дуже важко, по одній треба робити» → рішення D925: у каньйоні шакали по одному (`LizardCave` `Fight_CaveLizards`, `LizardCaves` `Fight_Lizards`).
+- **Severity:** visual (баланс)
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B236 — карта на M не каже, де я
+- **Where:** `SampleProject/Game.tscn` → `UI/MapWindow` (сітка MetSys, D867: «лише сітка»); світова карта з картками локацій — `Scripts/Menus/Game/metsys_map_component.gd` (D458)
+- **Expected:** відкривши карту, гравець одразу бачить, у якій він кімнаті й локації і куди можна піти
+- **Got:** скрін Sapega 29.10 «я не розумію, де я»: невелика напівпрозора сітка посеред екрана поверх гри; невідкриті клітинки намальовані тими самими плитками з хрестиком, що й рамка, тож досліджене (кілька коридорів) губиться серед них; позначка героя — дрібна зелена фігурка; немає ні назви кімнати / локації, ні легенди. Виправлення без нового арту (D867 обмежив вікно сіткою — це змінює його, тому показати Sapega): невідкриті клітинки не малювати (або ледь видно), досліджені — контрастні; назва поточної кімнати й локації над сіткою; більша позначка героя, що пульсує; затемнити гру під вікном. Пов'язано з B227 (рівень 2 карти каньйону порожній) і O16.
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** visual (читабельність)
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B237 — у Каньйоні нема де поповнити флягу: два шакали, потім скорпіон, а хілу нема
+- **Where:** фляга «Цілюща долоня» (D527: 3 ковтки, поповнюються лише збереженням); точки збереження є тільки в `DesertRoad`, `CityGates`, `City`, `LabTopFloor`, `Laboratory` — у жодній іншій кімнаті локації `canyon_of_whispers` (25 кімнат, `locations.json`) її немає. `LizardCaves`: `Fight_Lizards` (2 `fast`, L3), одразу далі `Fight_Scorpion` (`tank`, L3)
+- **Expected:** перед важкою парою боїв гравець може поповнити флягу (D527 прив'язує хіл до сейвів, отже сейв має бути поруч із важкими боями)
+- **Got:** Sapega 29.10 (скрін у LizardCaves): «два собаки, а потім скорпіон, причому в мене немає хілу» — фляга «x0», а до першої точки збереження на Пустельній дорозі ще далеко. D925 прибирає пару шакалів; лишається сама відсутність сейву в каньйоні. Рішення за Sapega: де поставити точку збереження (за замовчуванням — `ZahraRest`, «притулок» за назвою, і `Village`) або чи поповнювати флягу ще чимось (вогнище, кінець бою).
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** blocker (гравця вбиває крива, а не помилка)
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B238 — «це фігня, а не схованка»: секрет — це просто зайти за великий камінь
+- **Where:** секрети за D765 — невидимий `SecretArea` (`Scripts/Gameplay/SecretArea.gd`), зараховується, щойно герой у нього зайшов; на скріні — зовнішня кімната з жовтим небом і пальмами, герой стоїть за великим каменем переднього плану (`FrontDark/OccluderRock*`, напр. `DesertRoad` (948, 520) / (4628, 520), `MesaClimb`); схожий випадок — B229 (порожня схованка контрабандистів)
+- **Expected:** схованку видно як місце: прохід, який треба помітити (тріщина, фальшива стіна, вузький лаз за каменем), а всередині — нагорода
+- **Got:** Sapega 29.10 (скрін): «це фігня, а не схованка» — герой просто ховається за каменем переднього плану, нічого не відкривається й нічого не дається. Потрібне рішення Sapega (змінює D765): який вигляд має секрет (прохід / фальшива стіна / окрема кімната) і що він дає (скриня, гроші, предмет). **Sapega 29.10 → D928:** мерехтіння достатньо (можна й не помітити), лише зробити його блакитним. Лишається: секрет має щось давати (див. B229).
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** visual (дизайн секретів)
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B239 — на початку Пустельної дороги цегляна стіна там, звідки ми прийшли
+- **Where:** `Maps/DesertRoad.tscn` → `TileMap/Gate` (тайловий шар-брама на західному краю), ним керує `Controller_Gate` (`Scripts/Gameplay/GateController.gd`, відчиняє/зачиняє за станом сцени або квестом)
+- **Expected:** якщо прохід назад закритий, гравець бачить чому (обвал, зачинена брама, яку зачинив хтось у сюжеті), і закриття виглядає частиною світу, а не цегляною тайловою колоною посеред пустелі
+- **Got:** скрін Sapega 29.10: «не зрозуміло, чому тут стіна, хоча ми прийшли зліва» — ліворуч від героя вертикальна колона з цегляних тайлів на тлі дюн, без жодного пояснення. Що вирішити (Sapega): (a) прохід назад має бути відкритим — прибрати браму з цього краю; (b) закритий за сюжетом — тоді замінити тайли на намальовану перешкоду (обвал каміння / зачинена брама каньйону) і дати репліку Кусакама при першому підході. **Sapega 29.10 → D938:** прибрати, шлях назад відкритий (герой сам спускається з каньйону).
+- **Evidence:** скрін у чаті 2026-10-29
+- **Severity:** visual
+- **Found:** 2026-10-29, плейтест Sapega
+
+### B240 — незрозуміло, чому біля мерчанта бандити
+- **Where:** `Maps/DesertRoad.tscn` → `Merchant` (1120, 396) і `EnemySpawner` (x 800–1000, бандит + шакал + щитоносець, D932) прямо поруч
+- **Expected:** якщо бандити стоять біля торговця, це щось означає в світі
+- **Got:** Sapega 29.10: «не ясно, чому бандити біля мерчанта» — торговець спокійно торгує, а за кілька кроків бандити. Варіанти (Sapega): (a) рознести — бій далі по дорозі, біля торговця тихо (заодно D935 «передих»); (b) зробити сценою — бандити грабують торговця, герой рятує, після бою торговець дякує й відкриває крамницю (знижка / подарунок). **Sapega 29.10 → D937:** торговець лишається, навколо нього безпечна зона без ворогів; бій пересунути далі по дорозі.
+- **Severity:** visual (сюжет)
+- **Found:** 2026-10-29, плейтест Sapega
