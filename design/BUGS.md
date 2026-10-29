@@ -396,17 +396,6 @@ the history, this note keeps only what is open.
 - **Severity:** visual
 - **Found:** 2026-10-29, плейтест Sapega
 
-### B232 — після ривка коротка «мертва» мить: натискання не спрацьовують
-- **Where:** `Scripts/Player.gd:274` — удар і важкий удар приймаються лише `and not mover.is_rolling()`; `PlayerMover.gd` (`roll_duration` 0.30, `roll_cooldown` 0.6, `can_roll()` / `dash_chain_after`); буфер уже є — `PlayerCombat.INPUT_BUFFER` 0.2 (`_buffered` / `_buffer_left`)
-- **Expected:** Sapega 29.10: «після ривка якась мікросекунда, що я не можу нічого нажимать — бій треба зробити плавнішим»; натиснуте наприкінці ривка виконується одразу після нього (D504, Tails of Iron / Salt and Sanctuary — чесний, але чуйний бій)
-- **Got:** удар, натиснутий під час ривка, просто губиться (не йде в буфер), тож гравець тисне в останні кадри ривка — і нічого; виглядає як завмирання після ривка. Виправлення: натискання удару/важкого/вміння під час ривка класти в наявний буфер `PlayerCombat` (0.2 с) і виконувати в перший кадр після `is_rolling() == false`; перевірити, чи `roll_cooldown` 0.6 не блокує повторний ривок довше, ніж видно гравцю. Тест у `verify_combat_feel`: удар, натиснутий за ≤0.2 с до кінця ривка, виходить у перший кадр після нього.
-- **Severity:** visual (відчуття бою)
-- **Found:** 2026-10-29, плейтест Sapega
-- **Evidence:** скрін у чаті 2026-10-29
-- **Severity:** visual
-- **Found:** 2026-10-29, плейтест Sapega
-
-
 ### O<n> — <what you noticed>
 - **Where:** <screen / node>
 - **Why it bothered you:** one sentence
@@ -485,6 +474,7 @@ All measured, none with a source that makes them wrong:
 - **Where:** `Scripts/Player/Components/PlayerCombat.gd`: блок стартує лише в `_physics_process` зі стану `READY` (`_start_block()`), посеред удару — лише коли `can_cancel_attack()` (`SWING` після `_hit_out`, `HEAVY_RECOVERY`); під час ривка, `DRINK`, касту, збою блок не піднімається взагалі; `block_held` ставить `Player.gd:264`. Влучання ворога перевіряє `guard_against()` — `state != State.BLOCK` → не захищено
 - **Expected:** Sapega 29.10: «блок, якщо я в останній момент натискаю, то він міг встигнути заблокувати удар» — натиснутий до влучання блок захищає (D504: чуйний бій)
 - **Got:** (1) натискання за кадр до влучання може програти: `block_held` ставиться в `_input`, а `BLOCK` — лише в наступному `_physics_process` героя; якщо удар ворога рахується раніше в тому ж кадрі, він проходить; (2) натиснутий під час свого удару (до `_hit_out`), ривка чи `DRINK` блок не піднімається, доки дія не скінчиться, і запізнюється. Виправлення: піднімати блок у тому ж кадрі, коли натиснуто (з `READY`), плюс невелике вікно «пізнього блоку» (~0.1 с: удар, що влучив за ≤0.1 с до підняття, рахується заблокованим, не парируванням); з удару — дозволити скасування в блок раніше (до хітбокса, Tails of Iron), з ривка — у буфер (як B232). Числа — підібрати в грі. Тест у `verify_combat_feel`: блок за 1 кадр до влучання — заблоковано.
+- **Partly fixed (29.10, T5):** the block now rises in the frame of the press (`PlayerCombat.raise_block_now()` from `Player._unhandled_input`; `verify_combat_feel` [6]). **Not done, on purpose:** cancelling one's own swing into a block before its hit frames — D504 makes the wind-up a commitment (roll and block cancel only in recovery), so that needs Sapega's word. **Not built:** the ~0.1 s late-block grace (a hit just before the raise counted as blocked). Re-test in play first.
 - **Severity:** visual (відчуття бою)
 - **Found:** 2026-10-29, плейтест Sapega
 

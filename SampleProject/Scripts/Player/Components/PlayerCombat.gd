@@ -297,7 +297,7 @@ func _physics_process(delta: float) -> void:
 			# куди герой дивиться тепер.
 			_queued = false
 			perform_attack(player.last_direction if grip == &"bow" else _direction)
-		elif _buffer_left > 0.0 and attack_cooldown <= 0.0:
+		elif _buffer_left > 0.0 and attack_cooldown <= 0.0 and not player.mover.is_rolling():
 			var action := _buffered
 			_buffer_left = 0.0
 			if action == &"heavy":
@@ -499,6 +499,20 @@ func heavy_attack(last_direction: int) -> void:
 func _buffer(action: StringName) -> void:
 	_buffered = action
 	_buffer_left = INPUT_BUFFER
+
+## B232: удар, натиснутий посеред перекату, — у чергу: вийде в перший кадр після нього (не губиться).
+func buffer_attack(heavy: bool) -> void:
+	_buffer(&"heavy" if heavy else &"light")
+
+## B233: блок піднімається в кадрі натискання, а не в наступному _physics_process — удар ворога в тому ж кадрі
+## вже йде в блок. Удар героя він зриває лише там, де дозволяє can_cancel_attack() (D504).
+func raise_block_now() -> void:
+	if not block_held or Charms.has_effect(&"no_block"):
+		return
+	if can_cancel_attack():
+		cancel_attack()
+	if state == State.READY and not player.mover.is_rolling():
+		_start_block()
 
 ## Крок уперед на ударі (D504) — лише з землі.
 func _step(distance: float) -> void:

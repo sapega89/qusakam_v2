@@ -262,6 +262,7 @@ func _unhandled_input(ev: InputEvent) -> void:
 	# На відновленні удару блок зриває його (D456, D504); натиснутий раніше — тримають, тож починається, щойно можна.
 	if ev.is_action(&"block"):
 		combat.block_held = ev.is_pressed() and not event
+		combat.raise_block_now()
 		return
 	if ev.is_action_pressed(&"quick_potion") and not event:
 		drink_potion()
@@ -271,6 +272,9 @@ func _unhandled_input(ev: InputEvent) -> void:
 		combat.release_shot()
 		return
 	var light := ev.is_action_pressed(&"attack")
+	if (light or ev.is_action_pressed(&"heavy_attack")) and mover.is_rolling() and not event:
+		combat.buffer_attack(not light)  # B232: не губиться — вийде одразу після перекату
+		return
 	if (light or ev.is_action_pressed(&"heavy_attack")) and not mover.is_rolling() and not mover.is_climbing():
 		if event:
 			return  # під час катсцени не б'ємо

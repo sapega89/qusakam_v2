@@ -72,6 +72,7 @@ func _initialize() -> void:
 	await _slide_off()
 	await _boss()
 	await _jackal_tell()
+	await _roll_buffer_and_late_block()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit()
@@ -228,3 +229,40 @@ func _jackal_tell() -> void:
 	ck(tell != null and tell.line_length == 0.0, "the jackal's tell is the glint alone (line %s)" % (tell.line_length if tell != null else "no tell"))
 	await create_timer(1.0).timeout
 	jackal.queue_free()
+
+
+## [6] B232: удар, натиснутий наприкінці перекату, не губиться — виходить у перший кадр після нього.
+## B233: блок піднімається в кадрі натискання (до _physics_process), тож удар ворога того ж кадру — уже в блок.
+func _roll_buffer_and_late_block() -> void:
+	print("[6] B232: an attack pressed late in the roll comes out right after it; B233: the block rises on the press")
+	await _hero_at(arena_x)
+	for i in 30: await physics_frame
+	_press(&"dodge")
+	await physics_frame
+	_press(&"dodge", false)
+	while hero.mover.roll_time_left > 0.12:
+		await physics_frame
+	_press(&"attack")
+	await physics_frame
+	_press(&"attack", false)
+	var rolled_left: float = hero.mover.roll_time_left
+	var frames := 0
+	while hero.mover.is_rolling() and frames < 60:
+		await physics_frame
+		frames += 1
+	var after := 0
+	while hero.combat.state != hero.combat.State.SWING and after < 6:
+		await physics_frame
+		after += 1
+	ck(rolled_left > 0.0 and hero.combat.state == hero.combat.State.SWING and after <= 2,
+			"the attack pressed %.2f s before the roll's end swings %d frame(s) after it" % [rolled_left, after])
+	await create_timer(1.2).timeout
+	await _hero_at(arena_x)
+	for i in 10: await physics_frame
+	_press(&"block")
+	Input.flush_buffered_events()  # подія доходить до героя зараз, без кроку фізики
+	var raised: bool = hero.combat.state == hero.combat.State.BLOCK  # ще до наступного _physics_process
+	await physics_frame
+	_press(&"block", false)
+	for i in 4: await physics_frame
+	ck(raised, "the block is up in the frame of the press, before the physics step")
