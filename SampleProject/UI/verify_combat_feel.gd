@@ -74,6 +74,7 @@ func _initialize() -> void:
 	await _jackal_tell()
 	await _roll_buffer_and_late_block()
 	await _micro_stun()
+	await _block_then_strike_and_roll()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit()
@@ -308,3 +309,39 @@ func _micro_stun() -> void:
 	ck(flinched and is_equal_approx(enemy.stamina.max_stamina - enemy.stamina.current, 25.0),
 			"the heavy flinches it and takes 25 stamina (%.0f)" % (enemy.stamina.max_stamina - enemy.stamina.current))
 	enemy.queue_free()
+
+
+## [8] B254: удар, натиснутий у блоці після парирування, — рипост одразу, а не в буфер (блок тримають).
+## B256: блок, натиснутий посеред перекату, не зупиняє перекат — щит піднімається після нього.
+func _block_then_strike_and_roll() -> void:
+	print("[8] B254: an attack from the block is the riposte at once; B256: block held in a roll does not stop the roll")
+	while hero.combat.state != hero.combat.State.READY or hero.combat.attack_cooldown > 0.0:  # важкий з [7] ще йде
+		await physics_frame
+	await _hero_at(arena_x)
+	for i in 10: await physics_frame
+	_press(&"block")
+	for i in 3: await physics_frame
+	hero.combat.riposte_left = 1.0  # щойно парирував
+	_press(&"attack")
+	await physics_frame
+	_press(&"attack", false)
+	await physics_frame
+	ck(hero.combat.state == hero.combat.State.HEAVY_STRIKE and hero.combat.riposte_left == 0.0,
+			"block held, parried, attack pressed: the riposte (a heavy strike, no wind-up) comes out (state %s, riposte_left %.2f, riposting %s)" % [hero.combat.state, hero.combat.riposte_left, hero.combat.riposting])
+	_press(&"block", false)
+	await create_timer(1.2).timeout
+	await _hero_at(arena_x)
+	for i in 10: await physics_frame
+	var x0: float = hero.global_position.x
+	_press(&"dodge")
+	await physics_frame
+	_press(&"dodge", false)
+	for i in 3: await physics_frame
+	_press(&"block")
+	var blocked_in_roll := false
+	while hero.mover.is_rolling():
+		blocked_in_roll = blocked_in_roll or hero.combat.state == hero.combat.State.BLOCK
+		await physics_frame
+	_press(&"block", false)
+	ck(not blocked_in_roll and absf(hero.global_position.x - x0) > 120.0,
+			"block pressed in the roll: no block until it ends, the roll goes its length (%.0f px)" % absf(hero.global_position.x - x0))

@@ -302,7 +302,7 @@ func _physics_process(delta: float) -> void:
 			state = State.READY
 		return
 	if state == State.READY:
-		if guarding:
+		if guarding and not player.mover.is_rolling():  # B256: блок посеред перекату зупиняв перекат — щит після нього
 			_start_block()
 		elif _queued and attack_cooldown <= 0.0:
 			# Наступний удар серії — кадром пізніше: хітбокс мусить хоч кадр побути вимкненим,
@@ -444,6 +444,10 @@ func perform_attack(last_direction: int) -> void:
 	if grip == &"bow":
 		_quick_shot(last_direction)
 		return
+	# B254: удар із блоку знімає блок і б'є одразу — інакше він чекав у буфері, поки блок тримають, і рипост (D504)
+	# після парирування губився
+	if state == State.BLOCK:
+		state = State.READY
 	if riposte_left > 0.0 and state == State.READY:
 		_riposte(last_direction)
 		return
