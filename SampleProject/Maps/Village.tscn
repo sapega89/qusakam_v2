@@ -398,8 +398,3 @@ scale = Vector2(2.2, 2.2)
 texture = ExtResource("x2")
 centered = false
 offset = Vector2(-78, -114)
-
-[node name="OccluderPalm2" parent="FrontDark" instance=ExtResource("decor_palm")]
-position = Vector2(3040, 520)
-scale = Vector2(7.15, 7.15)
-flip_h = true
