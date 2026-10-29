@@ -29,6 +29,10 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="rd_bird"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_butterfly.tscn" id="rd_butterfly"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/grass_tuft.tscn" id="rd_grass"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/SavePoint.gd" id="save_point"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_shrine_save"]
+radius = 32.0
 
 [sub_resource type="Gradient" id="Gradient_sky"]
 colors = PackedColorArray(0.31, 0.53, 0.86, 1, 0.769, 0.859, 0.906, 1)
@@ -513,6 +517,16 @@ position = Vector2(1165, 184)
 
 [node name="Look" type="Marker2D" parent="Meditation" unique_id=402817736]
 position = Vector2(930, 180)
+
+[node name="SavePoint_Shrine" type="Area2D" parent="."]
+position = Vector2(1165, 162)
+script = ExtResource("save_point")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint_Shrine"]
+shape = SubResource("CircleShape2D_shrine_save")
+
+[node name="Seat" type="Marker2D" parent="SavePoint_Shrine"]
+position = Vector2(0, 22)
 
 [node name="RoomInstance" type="Node2D" parent="." unique_id=1011878462 instance=ExtResource("3_6wo6x")]
 script = ExtResource("7_jxins")

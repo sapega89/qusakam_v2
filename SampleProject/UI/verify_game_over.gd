@@ -85,9 +85,10 @@ func _initialize() -> void:
 	await process_frame
 	ck(get_nodes_in_group(&"game_over_screen").size() == 1, "a second death does not stack screens")
 
-	print("[2] Resume without a save → old respawn")
+	print("[2] Resume without a save → the game starts over (D948)")
 	s.resume()
-	ck(s.last_action == "respawn" and player.kills == 1, "falls back to the room-entrance respawn")
+	ck(s.last_action == "restart" and get_meta("start_new_game", false) and player.kills == 0, "no save: back to the start, as New Game")
+	s._close()
 	for i in 3: await process_frame
 	ck(_screen() == null and not paused, "screen closes, game resumes")
 

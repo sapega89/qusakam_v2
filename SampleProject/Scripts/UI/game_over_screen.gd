@@ -128,10 +128,10 @@ func resume() -> void:
 		get_tree().set_meta("start_new_game", false)
 		_leave(GAME_SCENE)
 		return
-	# Сейва ще немає — респавн біля входу в кімнату (Q23: так вирішено, це не запасний шлях).
-	last_action = "respawn"
-	_close()
-	player.kill()
+	# D948 (замість Q23): сейва ще немає — гра спочатку, як New Game; світ свіжий, ніхто не лишається вбитим (B249).
+	last_action = "restart"
+	get_tree().set_meta("start_new_game", true)
+	_leave(GAME_SCENE)
 
 
 ## Load Game (D92) — наявне меню Save Slot Selection у режимі LOAD.
