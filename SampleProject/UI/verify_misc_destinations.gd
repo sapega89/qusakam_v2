@@ -247,6 +247,23 @@ func _initialize() -> void:
 		for i in 6: await process_frame
 		ck(layer.active_modal == null, "Escape closes the full-screen topic")
 		ck(topics_panel.is_visible_in_tree(), "back on the topic list")
+		for down in [true, false]:
+			var esc := InputEventAction.new()
+			esc.action = &"ui_cancel"
+			esc.pressed = down
+			root.push_input(esc)
+			await process_frame
+		for i in 6: await process_frame
+		ck(menu.is_visible_in_tree(), "Escape on the topic list keeps the Game Menu open")
+		ck(not topics_panel.is_visible_in_tree(), "the topic list is closed")
+		var misc: Node = layer.active_modal
+		ck(misc != null and misc.is_in_group(&"misc_menu_modal"), "back on the Misc list")
+		ck(misc != null and get_root().gui_get_focus_owner() == misc.tutorial_button, "focus on the Tutorial row")
+		var hint: String = get_first_node_in_group(&"ui_bottom_bar").get_node("%HintLabel").text
+		ck(hint == "Select a category.", "bottom hint back to the menu's (%s)" % hint)
+		if misc:
+			misc.cancelled.emit()
+			await process_frame
 	menu.switch_to_tab("Inventory")
 	await process_frame
 	ck(not topics_panel.is_visible_in_tree(), "switching tabs hides the topic list")

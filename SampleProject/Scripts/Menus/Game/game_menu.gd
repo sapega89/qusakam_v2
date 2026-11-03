@@ -220,6 +220,12 @@ func close_menu() -> void:
 ## підтвердження) і закриває себе; меню закривається, лише коли Esc нікому не потрібен.
 func _unhandled_input(event: InputEvent) -> void:
 	# Через InputMap, а не сирий KEY_ESCAPE: щоб працювали ремапінг і геймпад. B (ui_cancel) і Start (game_menu).
-	if event.is_action_pressed(&"ui_cancel") or event.is_action_pressed(&"game_menu"):
+	# Esc у списку тем — крок назад до списку Misc, меню лишається (Sapega, 2026-11-03).
+	if event.is_action_pressed(&"ui_cancel") and %TutorialComponent.visible:
+		%TutorialComponent.visible = false
+		_onmisc_button_pressed()
+		_get_ui_manager().get_modal_layer().active_modal.tutorial_button.grab_focus.call_deferred()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed(&"ui_cancel") or event.is_action_pressed(&"game_menu"):
 		close_menu()
 		get_viewport().set_input_as_handled()

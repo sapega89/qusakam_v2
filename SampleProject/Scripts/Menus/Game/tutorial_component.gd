@@ -41,8 +41,12 @@ func open_topic(i: int) -> void:
 
 func _notification(what: int) -> void:
 	# Показали список — фокус на першу тему, щоб стрілки й Enter працювали одразу.
-	if what == NOTIFICATION_VISIBILITY_CHANGED and is_node_ready() and is_visible_in_tree():
+	if what != NOTIFICATION_VISIBILITY_CHANGED or not is_node_ready() or not is_inside_tree():
+		return
+	var bar: Node = get_tree().get_first_node_in_group(&"ui_bottom_bar")
+	if is_visible_in_tree():
 		_fill()
 		(_list.get_child(0) as Button).grab_focus.call_deferred()
-		var bar: Node = get_tree().get_first_node_in_group(&"ui_bottom_bar")
 		bar.set_context_hint("Select a tutorial topic.")  # Figma 130:1172
+	else:
+		bar.set_context_hint("")  # сховали список — типова підказка меню
